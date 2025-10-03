@@ -1,0 +1,55 @@
+{
+  "collectionName": "component_content_grid_3x3",
+  "info": {
+    "displayName": "Grid3x3",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "nth1": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth2": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth3": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth4": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth5": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth6": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth7": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth8": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth9": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    }
+  }
+}

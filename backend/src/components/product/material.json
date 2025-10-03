@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_product_material",
+  "info": {
+    "displayName": "Material",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "material": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::material.material"
+    },
+    "percentage": {
+      "type": "integer"
+    }
+  }
+}

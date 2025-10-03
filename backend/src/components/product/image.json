@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_product_image",
+  "info": {
+    "displayName": "Image",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "percentage": {
+      "type": "integer"
+    }
+  }
+}

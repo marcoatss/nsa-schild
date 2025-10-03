@@ -1,0 +1,33 @@
+{
+  "collectionName": "component_content_grid_3x1_side",
+  "info": {
+    "displayName": "Grid3x1Side",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "right"
+      ]
+    },
+    "dark": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "paragraph": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.block-paragraph"
+    },
+    "grid": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-3x1"
+    }
+  }
+}

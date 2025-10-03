@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "show_cases",
+  "info": {
+    "singularName": "show-case",
+    "pluralName": "show-cases",
+    "displayName": "ShowCase",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "slug": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "customField",
+      "options": {
+        "output": "HTML",
+        "preset": "light"
+      },
+      "required": true,
+      "customField": "plugin::ckeditor.CKEditor"
+    },
+    "content": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "dynamiczone",
+      "components": [
+        "content.grid-3x1-side",
+        "content.grid-3x1",
+        "content.grid-3x2-side",
+        "content.grid-3x2",
+        "content.grid-3x3-side",
+        "content.grid-3x3",
+        "content.grid-5x1",
+        "content.hero"
+      ],
+      "required": true
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

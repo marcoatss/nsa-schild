@@ -1,0 +1,25 @@
+{
+  "collectionName": "component_content_grid_3x1",
+  "info": {
+    "displayName": "Grid3x1",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "nth1": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth2": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    },
+    "nth3": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.grid-cell"
+    }
+  }
+}

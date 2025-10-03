@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_product_media",
+  "info": {
+    "displayName": "media",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "media": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "sortingIndex": {
+      "type": "integer",
+      "default": 1000000,
+      "required": true
+    }
+  }
+}

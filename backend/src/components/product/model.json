@@ -1,0 +1,93 @@
+{
+  "collectionName": "components_product_models",
+  "info": {
+    "displayName": "Model",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "supplier": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "decimal"
+    },
+    "volume": {
+      "type": "decimal"
+    },
+    "height": {
+      "type": "decimal"
+    },
+    "length": {
+      "type": "decimal"
+    },
+    "depth": {
+      "type": "decimal"
+    },
+    "safetyAreaLength": {
+      "type": "decimal"
+    },
+    "safetyAreaDepth": {
+      "type": "decimal"
+    },
+    "fallHeight": {
+      "type": "decimal"
+    },
+    "weightUnit": {
+      "type": "string",
+      "default": "kg"
+    },
+    "volumeUnit": {
+      "type": "string",
+      "default": "m³"
+    },
+    "heightUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "lengthUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "depthUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "safetyAreaLengthUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "safetyAreaDepthUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "fallHeightUnit": {
+      "type": "string",
+      "default": "m"
+    },
+    "materials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.material"
+    },
+    "optionGroups": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.option-group"
+    },
+    "media": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    }
+  }
+}

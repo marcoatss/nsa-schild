@@ -1,0 +1,18 @@
+{
+  "collectionName": "component_content_block_paragraph",
+  "info": {
+    "displayName": "BlockParagraph",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "customField",
+      "options": {
+        "output": "HTML",
+        "preset": "light"
+      },
+      "customField": "plugin::ckeditor.CKEditor"
+    }
+  }
+}

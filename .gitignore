@@ -1,0 +1,66 @@
+# Monorepo root-level .gitignore
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database exports and sensitive data
+db/strapi/
+db/*.parquet
+db/export_*.json
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Temporary files
+.tmp/
+tmp/
+
+# Package manager lock files (choose one)
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
+
+# Coverage reports
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.pid
+*.seed
+*.pid.lock
+.cursor/

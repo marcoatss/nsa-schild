@@ -1,0 +1,41 @@
+{
+  "collectionName": "components_quote_entry",
+  "info": {
+    "displayName": "Entry",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "category": {
+      "type": "string",
+      "required": true
+    },
+    "subcategory": {
+      "type": "string",
+      "required": true
+    },
+    "product": {
+      "type": "string",
+      "required": true
+    },
+    "model": {
+      "type": "string",
+      "required": true
+    },
+    "notes": {
+      "type": "string",
+      "required": true
+    },
+    "options": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quote.option"
+    },
+    "supplier": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    }
+  }
+}

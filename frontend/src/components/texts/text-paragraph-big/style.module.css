@@ -1,0 +1,62 @@
+.paragraph {
+  @apply flex flex-col gap-6 group-[.is-dark]:bg-foreground;
+  @apply group-[.is-dark]:!bg-red-500;
+}
+
+.paragraph h1, .paragraph h2, .paragraph h3, .paragraph h4 {
+  @apply uppercase text-sm font-bold group-[.is-dark]:text-white;
+}
+
+.paragraph p {
+  @apply text-xl;
+}
+
+.paragraph h1, .paragraph h2, .paragraph h3, .paragraph h4, .paragraph p, .paragraph li {
+  @apply group-[.is-dark]:text-white;
+}
+
+.paragraph li {
+  @apply ml-4;
+}
+
+.paragraph strong {
+  @apply font-bold;
+}
+
+.paragraph a {
+  @apply select-none uppercase inline-flex items-center justify-center whitespace-nowrap text-sm font-bold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply bg-secondary text-secondary-foreground hover:brightness-95 active:brightness-90 border border-border/25;
+  @apply h-10 px-4 py-2 w-full;
+}
+
+.paragraph img {
+  @apply border border-border-light p-2;
+}
+
+.paragraph ul li {
+  @apply list-disc;
+}
+
+.paragraph ol li {
+  @apply list-decimal;
+}
+
+.paragraph table {
+  @apply w-full table-auto border-collapse;
+  @apply text-sm font-medium;
+}
+
+.paragraph table tbody tr {
+  @apply odd:bg-foreground/10;
+}
+
+.paragraph table th {
+  @apply bg-foreground text-white;
+  @apply border border-border/75 px-4 py-2;
+}
+
+.paragraph table td {
+  @apply border border-border-light px-4 py-2;
+}
+
+.test { color: blue; }

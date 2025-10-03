@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --header-row-height: 2.5rem;
+    --header-height: calc(var(--section-gap-width) + 2 * var(--header-row-height) + 3 * var(--border-width));
+    --header-xs-row-height: 3rem;
+    --header-xs-height: calc(var(--section-gap-width-xs) + var(--header-xs-row-height));
+    --breadcrumb-height: 4rem;
+    --section-gap-width: 2rem;
+    --section-gap-width-xs: .5rem;
+    --border-width: 1px;
+
+    --background: 0 0% 100%;
+    --foreground: 166 91% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 166 91% 9%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 31 97% 72%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 355 50% 54%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 166 91% 9%;
+    --border-light: 160 10% 43%;
+    --input: 160 10% 43%;
+    --ring: 0 0% 3.9%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 100% 50%;
+    --border-light: 200 100% 50%;
+    --input: 200 100% 50%;
+    --ring: 0 0% 83.1%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+  }
+}
+
+@layer utilities {
+  .group-dark {
+    @apply text-white;
+  }
+}

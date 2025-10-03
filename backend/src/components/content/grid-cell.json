@@ -1,0 +1,33 @@
+{
+  "collectionName": "component_content_grid_cell",
+  "info": {
+    "displayName": "GridCell",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "paragraph",
+        "image"
+      ]
+    },
+    "dark": {
+      "type": "boolean"
+    },
+    "paragraph": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.block-paragraph"
+    },
+    "media": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": false
+    }
+  }
+}

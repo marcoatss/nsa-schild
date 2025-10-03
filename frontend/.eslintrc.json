@@ -1,0 +1,33 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:readable-tailwind/warning",
+    "plugin:readable-tailwind/error",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "readable-tailwind"
+  ],
+  "rules": {
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["sibling", "parent"],
+          "index",
+          "unknown"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  }
+}

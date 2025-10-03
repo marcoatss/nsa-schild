@@ -1,0 +1,114 @@
+{
+  "breadcrumb": {
+    "products": "Categories",
+    "subcategory": "{subcategoryName}",
+    "category": "{categoryName}",
+    "product": "{productName}",
+    "wishlist": "Wishlist"
+  },
+  "common": {
+  },
+  "header": {
+    "expand_subcategories": "Expand",
+    "expand_products": "Discover more",
+    "show_cases": "Show cases",
+    "catalogues": "Catalogues",
+    "about": "About"
+  },
+  "page_about": {
+    "about": "About",
+    "about_title": "People-First Innovation",
+    "about_description": "At Schild, we believe in creating an environment where people come first. As a small, innovative team, we are deeply committed to building lasting relationships with our clients. Our cozy office is designed for collaboration, fostering a culture of teamwork, creativity, and mutual respect. We approach each project with a personalized touch, ensuring that our clients receive the attention and care they deserve. Our mission is to deliver high-quality, sustainable urban furnishings that not only meet but exceed expectations, all while maintaining a close-knit, client-centric ethos.",
+    "about_informations": "Informations",
+    "about_informations_phone": "+39 01 23456789",
+    "about_informations_email": "schild@schild.com",
+    "about_administration": "Administration",
+    "about_administration_phone": "+39 01 23456789",
+    "about_administration_email": "schild@schild.com",
+    "about_secretary": "Secretary",
+    "about_secretary_phone": "+39 01 23456789",
+    "about_secretary_email": "schild@schild.com",
+    "about_form_title": "Get in touch",
+    "about_form_first_name": "First name",
+    "about_form_last_name": "Last name",
+    "about_form_company": "Company",
+    "about_form_email": "Email",
+    "about_form_phone": "Phone",
+    "about_form_address": "Address",
+    "about_form_postal_code": "Postal code",
+    "about_form_notes": "Notes...",
+    "about_form_policy": "Accept terms and conditions",
+    "about_form_policy_description": "You agree to our Terms of Service and Privacy Policy.",
+    "about_form_submit": "Submit"
+  },
+  "page_catalogues": {
+    "catalogues": "Catalogues"
+  },
+  "page_categories": {
+    "title": "Categories",
+    "category_action": "Browse {categoryName}"
+  },
+  "page_product": {
+    "models": "Models",
+    "model_materials": "Materials",
+    "model_details": "Technical details",
+    "model_wishlist_counter": "{count, plural, =0 {No such model added to the wishlist yet.} =1 {1 such model added to the wishlist.} other {# such models added to the wishlist.} }",
+    "model_action_add": "Add to the wishlist",
+    "model_notes_placeholder": "Notes...",
+    "model_success_title": "{productName} added",
+    "model_success_action": "Review",
+    "model_success_description": "The model has been added to the wishlist",
+    "entries": "Wishlist",
+    "entries_empty": "The product hasn't been added to the wishlist yet.",
+    "entries_options": "Options",
+    "entries_notes_placeholder": "Notes...",
+    "entries_action_remove": "Remove",
+    "entries_action_remove_confirmation": "Sure?"
+  },
+  "page_products": {
+    "title": "{subcategoryName}"
+  },
+  "page_show_cases": {
+    "show_cases": "Show cases"
+  },
+  "page_subcategories": {
+    "title": "{categoryName}",
+    "subcategory_action": "Browse {subcategoryName}"
+  },
+  "page_wishlist": {
+    "wishlist": "Wishlist",
+    "wishlist_empty": "The wishlist is empty.",
+    "wishlist_request_quote": "Request a quote",
+    "wishlist_request_quote_description": "Request a quote for the wishlist using the form. Once you submit the form, one of our representatives will reach out to you shortly with all the necessary information, including pricing if requested. We are dedicated to providing you with exceptional service and answering any questions you may have about our products and services. Whether you&apos;re looking for specific details or just want to explore your options, we&apos;re here to assist you. Our team is committed to ensuring a seamless experience from start to finish, making sure you have everything you need to make an informed decision.",
+    "wishlist_form_first_name": "First name",
+    "wishlist_form_last_name": "Last name",
+    "wishlist_form_company": "Company",
+    "wishlist_form_email": "Email",
+    "wishlist_form_phone": "Phone",
+    "wishlist_form_address": "Address",
+    "wishlist_form_postal_code": "Postal code",
+    "wishlist_form_notes": "Notes...",
+    "wishlist_form_policy": "Accept terms and conditions",
+    "wishlist_form_policy_description": "You agree to our Terms of Service and Privacy Policy.",
+    "wishlist_form_submit": "Submit",
+    "wishlist_summary": "Summary",
+    "wishlist_success": "Request sent",
+    "wishlist_success_description": "Your wishlist has been successfully sent. Our representative will contact you soon with more information."
+  },
+  "product": {
+    "models_count": "{count} model{count, plural, =1 {} other {s} }",
+    "weight": "Weight",
+    "volume": "Volume",
+    "height": "Height",
+    "length": "Length",
+    "diameter": "Diameter",
+    "depth": "Width",
+    "safety_area_length": "Safety area length",
+    "safety_area_depth": "Safety area depth",
+    "fall_height": "Fall height"
+  },
+  "page_catalogues": {
+    "catalogues": "Catalogues",
+    "download": "Download"
+  }
+}

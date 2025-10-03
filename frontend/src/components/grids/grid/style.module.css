@@ -1,0 +1,28 @@
+.grid {
+  --line-thickness: 1px;
+  overflow: hidden;
+}
+
+.grid_item {
+  position: relative;
+}
+
+.grid_item::before,
+.grid_item::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  @apply bg-foreground;
+}
+
+.grid_item::after {
+  inline-size: 100%;
+  block-size: var(--line-thickness);
+  top: 100%;
+}
+
+.grid_item::before {
+  inline-size: var(--line-thickness);
+  block-size: 100%;
+  left: 100%;
+}

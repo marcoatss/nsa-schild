@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_quote_option",
+  "info": {
+    "displayName": "Option",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
+

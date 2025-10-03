@@ -1,0 +1,114 @@
+{
+  "breadcrumb": {
+    "products": "Kategorien",
+    "subcategory": "{subcategoryName}",
+    "category": "{categoryName}",
+    "product": "{productName}",
+    "wishlist": "Wunschliste"
+  },
+  "common": {
+  },
+  "header": {
+    "expand_subcategories": "Erweitern",
+    "expand_products": "Mehr entdecken",
+    "show_cases": "Showcases",
+    "catalogues": "Kataloge",
+    "about": "Über uns"
+  },
+  "page_about": {
+    "about": "Über uns",
+    "about_title": "Menschen-zuerst-Innovation",
+    "about_description": "Bei Schild glauben wir daran, eine Umgebung zu schaffen, in der Menschen an erster Stelle stehen. Als kleines, innovatives Team sind wir fest entschlossen, dauerhafte Beziehungen zu unseren Kunden aufzubauen. Unser gemütliches Büro ist auf Zusammenarbeit ausgelegt und fördert eine Kultur des Teamworks, der Kreativität und des gegenseitigen Respekts. Wir gehen jedes Projekt mit einer persönlichen Note an, um sicherzustellen, dass unsere Kunden die Aufmerksamkeit und Pflege erhalten, die sie verdienen. Unsere Mission ist es, hochwertige, nachhaltige urbane Möbel zu liefern, die nicht nur Erwartungen erfüllen, sondern übertreffen, während wir eine enge, kundenorientierte Ethik beibehalten.",
+    "about_informations": "Informationen",
+    "about_informations_phone": "+39 01 23456789",
+    "about_informations_email": "schild@schild.com",
+    "about_administration": "Verwaltung",
+    "about_administration_phone": "+39 01 23456789",
+    "about_administration_email": "schild@schild.com",
+    "about_secretary": "Sekretariat",
+    "about_secretary_phone": "+39 01 23456789",
+    "about_secretary_email": "schild@schild.com",
+    "about_form_title": "Kontakt aufnehmen",
+    "about_form_first_name": "Vorname",
+    "about_form_last_name": "Nachname",
+    "about_form_company": "Firma",
+    "about_form_email": "E-Mail",
+    "about_form_phone": "Telefon",
+    "about_form_address": "Adresse",
+    "about_form_postal_code": "Postleitzahl",
+    "about_form_notes": "Notizen...",
+    "about_form_policy": "Bedingungen und Konditionen akzeptieren",
+    "about_form_policy_description": "Sie stimmen unseren Nutzungsbedingungen und Datenschutzbestimmungen zu.",
+    "about_form_submit": "Absenden"
+  },
+  "page_catalogues": {
+    "catalogues": "Kataloge"
+  },
+  "page_categories": {
+    "title": "Kategorien",
+    "category_action": "{categoryName} durchsuchen"
+  },
+  "page_product": {
+    "models": "Modelle",
+    "model_materials": "Materialien",
+    "model_details": "Technische Details",
+    "model_wishlist_counter": "{count, plural, =0 {Noch kein solches Modell zur Wunschliste hinzugefügt.} =1 {1 solches Modell zur Wunschliste hinzugefügt.} other {# solche Modelle zur Wunschliste hinzugefügt.} }",
+    "model_action_add": "Zur Wunschliste hinzufügen",
+    "model_notes_placeholder": "Notizen...",
+    "model_success_title": "{productName} hinzugefügt",
+    "model_success_action": "Überprüfen",
+    "model_success_description": "Das Modell wurde zur Wunschliste hinzugefügt",
+    "entries": "Wunschliste",
+    "entries_empty": "Das Produkt wurde noch nicht zur Wunschliste hinzugefügt.",
+    "entries_options": "Optionen",
+    "entries_notes_placeholder": "Notizen...",
+    "entries_action_remove": "Entfernen",
+    "entries_action_remove_confirmation": "Sicher?"
+  },
+  "page_products": {
+    "title": "{subcategoryName}"
+  },
+  "page_show_cases": {
+    "show_cases": "Showcases"
+  },
+  "page_subcategories": {
+    "title": "{categoryName}",
+    "subcategory_action": "{subcategoryName} durchsuchen"
+  },
+  "page_wishlist": {
+    "wishlist": "Wunschliste",
+    "wishlist_empty": "Die Wunschliste ist leer.",
+    "wishlist_request_quote": "Angebot anfordern",
+    "wishlist_request_quote_description": "Fordern Sie ein Angebot für die Wunschliste mit dem Formular an. Sobald Sie das Formular absenden, wird sich einer unserer Vertreter in Kürze mit allen notwendigen Informationen, einschließlich Preisangaben, bei Ihnen melden. Wir sind bestrebt, Ihnen einen außergewöhnlichen Service zu bieten und alle Fragen zu unseren Produkten und Dienstleistungen zu beantworten. Ob Sie spezifische Details wünschen oder nur Ihre Optionen erkunden möchten, wir sind hier, um Ihnen zu helfen. Unser Team ist bestrebt, von Anfang bis Ende ein nahtloses Erlebnis zu gewährleisten und sicherzustellen, dass Sie alles haben, was Sie benötigen, um eine fundierte Entscheidung zu treffen.",
+    "wishlist_form_first_name": "Vorname",
+    "wishlist_form_last_name": "Nachname",
+    "wishlist_form_company": "Firma",
+    "wishlist_form_email": "E-Mail",
+    "wishlist_form_phone": "Telefon",
+    "wishlist_form_address": "Adresse",
+    "wishlist_form_postal_code": "Postleitzahl",
+    "wishlist_form_notes": "Notizen...",
+    "wishlist_form_policy": "Bedingungen und Konditionen akzeptieren",
+    "wishlist_form_policy_description": "Sie stimmen unseren Nutzungsbedingungen und Datenschutzbestimmungen zu.",
+    "wishlist_form_submit": "Absenden",
+    "wishlist_summary": "Zusammenfassung",
+    "wishlist_success": "Anfrage gesendet",
+    "wishlist_success_description": "Ihre Wunschliste wurde erfolgreich gesendet. Unser Vertreter wird sich bald mit weiteren Informationen bei Ihnen melden."
+  },
+  "product": {
+    "models_count": "{count} Modell{count, plural, =1 {} other {e} }",
+    "weight": "Gewicht",
+    "volume": "Volumen",
+    "height": "Höhe",
+    "length": "Länge",
+    "diameter": "Durchmesser",
+    "depth": "Breite",
+    "safety_area_length": "Sicherheitsbereich Länge",
+    "safety_area_depth": "Sicherheitsbereich Tiefe",
+    "fall_height": "Fallhöhe"
+  },
+  "page_catalogues": {
+    "catalogues": "Kataloge",
+    "download": "Herunterladen"
+  }
+}

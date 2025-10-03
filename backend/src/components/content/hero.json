@@ -1,0 +1,39 @@
+{
+  "collectionName": "component_content_hero",
+  "info": {
+    "displayName": "Hero",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "right"
+      ]
+    },
+    "dark": {
+      "type": "boolean"
+    },
+    "sticky": {
+      "type": "boolean"
+    },
+    "fullHeight": {
+      "type": "boolean"
+    },
+    "paragraph": {
+      "type": "component",
+      "repeatable": false,
+      "component": "content.block-paragraph"
+    },
+    "media": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": false
+    }
+  }
+}
