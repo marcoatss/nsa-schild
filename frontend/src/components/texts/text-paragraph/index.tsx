@@ -6,9 +6,13 @@ export interface TextParagraphProps {
 
 export const TextParagraphComponent: React.FC<TextParagraphProps> = ({
   content,
-}: TextParagraphProps) => (
-  <div
-    className={style.paragraph}
-    dangerouslySetInnerHTML={{ __html: content }}
-  />
-);
+}: TextParagraphProps) => {
+  if (!content) return null;
+  
+  return (
+    <div
+      className={style.paragraph}
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  );
+};

@@ -91,44 +91,161 @@ nsa-schild/
 ## Development Setup
 
 ### Prerequisites
-- **Node.js**: **20.x.x** (strictly required - see note below)
+- **Node.js**: **18.10.0** (strictly required - see note below)
 - **npm**: ≥ 6.0.0 or **yarn**
 - **PostgreSQL**: Latest stable version (or use SQLite for development)
 
 > **⚠️ IMPORTANT: Node.js Version**  
-> This project **requires Node.js 20.x**. Strapi v4.24.3 supports Node 18-20, but some plugins only work with Node 20.  
-> Using Node 18 or Node 24+ will cause EBADENGINE warnings and potential compatibility issues.  
+> This project **requires Node.js 18.10.0**. Strapi v4.24.3 supports Node 18-20.  
+> Using different versions may cause EBADENGINE warnings and compatibility issues.  
 > **Use nvm to manage Node versions** - see installation steps below.
 
-### Initial Setup
+### Two Development Options
 
-#### 0. Install Node Version Manager (nvm)
+This project supports two ways to run the application:
+
+#### Option 1: Docker (Recommended for Quick Start)
+
+**Pros:**
+- No need to install Node.js or PostgreSQL locally
+- Consistent environment across all developers
+- Easy database import and reset
+- Single command to start everything
+
+**Quick Start:**
+```bash
+make build        # Build Docker images
+make up           # Start all services
+make import-db    # Import database
+```
+
+See **[DOCKER.md](DOCKER.md)** for complete Docker setup and commands.
+
+#### Option 2: Local Development (Full Control)
+
+**Pros:**
+- Faster hot-reload (no Docker overhead)
+- Direct access to Node.js debugging tools
+- More control over individual services
+
+**Continue below for local setup instructions.**
+
+---
+
+### Initial Setup (Local Development)
+
+#### 0. Prerequisites
+
+**Node.js via nvm:**
 
 If you don't have nvm installed:
 
+**macOS/Linux:**
 ```bash
-# Install nvm
+# Download and install nvm (recommended method)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
-# Restart terminal or load nvm
-source ~/.zshrc  # or ~/.bashrc for bash
+# Alternative: wget
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
-# Install Node 20
-nvm install 20
+# The script automatically adds nvm initialization to your shell profile
+# (~/.zshrc, ~/.bashrc, ~/.bash_profile, or ~/.profile)
 
-# Use Node 20
-nvm use 20
+# Restart terminal or manually load nvm in current session:
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Set as default (optional but recommended)
-nvm alias default 20
-
-# Verify
-node -v  # Should output v20.x.x
-npm -v   # Should output v10.x.x
+# Verify nvm installation
+nvm --version  # Should output 0.40.1 or similar
 ```
 
-> **💡 Pro Tip**: This project includes a `.nvmrc` file in the root directory.  
-> Simply run `nvm use` when you're in the project directory, and nvm will automatically switch to Node 20.
+**Windows:**
+Windows users should use [nvm-windows](https://github.com/coreybutler/nvm-windows) (separate project):
+1. Download the installer from [nvm-windows releases](https://github.com/coreybutler/nvm-windows/releases)
+2. Run `nvm-setup.exe`
+3. Open a **new** command prompt or PowerShell window
+4. Verify: `nvm version`
+
+**macOS with Homebrew (alternative):**
+```bash
+brew install nvm
+
+# Add to shell profile (e.g., ~/.zshrc)
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# Restart terminal
+```
+
+**Install Node 18.10.0 with nvm:**
+```bash
+# Install Node 18.10.0
+nvm install 18.10.0
+
+# Use Node 18.10.0 in current session
+nvm use 18.10.0
+
+# Set Node 18.10.0 as default for all new terminals (recommended)
+nvm alias default 18.10.0
+
+# Verify installation
+node -v  # Should output v18.10.0
+npm -v   # Should output v8.19.2
+```
+
+> **💡 Pro Tip**: This project includes a `.nvmrc` file in the root directory (containing `18.10.0`).  
+> Simply run `nvm use` when you're in the project directory, and nvm will automatically switch to Node 18.10.0.
+> 
+> **Note**: Previous `.nvmrc` files in `backend/` and `frontend/` subdirectories have been removed to avoid conflicts.  
+> The monorepo uses a single Node version managed at the root level.
+
+**Common nvm commands:**
+```bash
+nvm ls              # List installed Node versions
+nvm ls-remote       # List available Node versions
+nvm current         # Show current Node version
+nvm which 18.10.0   # Show path to Node 18.10.0
+nvm uninstall 24    # Remove a specific version
+```
+
+---
+
+**Python 3 (for database scripts):**
+
+Required for `scripts/import-db.py` and `scripts/reset-admin.py`.
+
+```bash
+# Check Python installation
+python3 --version  # Should be 3.8+
+
+# Create virtual environment (recommended)
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Deactivate when done
+deactivate
+```
+
+**Why virtual environment?**
+- Isolates dependencies
+- Prevents conflicts
+- Reproducible (`venv/` is gitignored)
+- Best practice
+
+**Usage:**
+```bash
+source venv/bin/activate     # Activate
+python3 scripts/import-db.py # Run scripts
+deactivate                   # Deactivate
+```
 
 #### 1. Clone and Install
 ```bash
@@ -136,8 +253,8 @@ npm -v   # Should output v10.x.x
 git clone <repository-url>
 cd nsa-schild
 
-# Ensure you're using Node 20
-nvm use 20
+# Ensure you're using Node 18.10.0
+nvm use
 
 # Install backend dependencies
 cd backend
@@ -149,14 +266,72 @@ npm install
 ```
 
 #### 2. Database Setup
-```bash
-# Create PostgreSQL database
-createdb schild_db
 
-# Or use SQLite (automatic, no setup needed)
+**Option A: PostgreSQL with Docker (Recommended for Local Development)**
+```bash
+# Start PostgreSQL in Docker
+docker run -d \
+  --name schild-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=schild_db \
+  -p 5433:5432 \
+  postgres:latest
+
+# Verify it's running
+docker ps | grep schild-postgres
 ```
 
-#### 3. Environment Configuration
+**Option B: Local PostgreSQL Installation**
+```bash
+# Install PostgreSQL (macOS with Homebrew)
+brew install postgresql@15
+brew services start postgresql@15
+
+# Create database
+createdb schild_db
+```
+
+**Option C: SQLite (Simplest, but not recommended for production-like data)**
+```bash
+# No setup needed - Strapi creates .tmp/data.db automatically
+```
+
+#### 3. Import Production Database (if available)
+
+If you have a database export in `db/` folder:
+
+```bash
+# Create Python virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Run the import script (automatically resets admin users)
+python3 scripts/import-db.py
+
+# The script will:
+# - Drop and recreate the public schema (clean slate)
+# - Read Parquet files from db/strapi/
+# - Create tables with proper primary keys and sequences
+# - Import all content (products, categories, media, etc.)
+# - Reset admin users (allows you to create a new admin on next Strapi startup)
+
+# To skip admin reset:
+python3 scripts/import-db.py --skip-admin-reset
+
+# Or use the standalone reset script anytime:
+python3 scripts/reset-admin.py
+
+# Or use Make commands:
+make import-db      # Local Python (faster)
+make reset-admin    # Local Python
+```
+
+**Note**: The `db/` folder contains AWS RDS Parquet exports and is ignored by git. The `import-db.py` script handles converting Parquet files to PostgreSQL tables. After import, Strapi will prompt you to create a new admin user on first startup.
+
+#### 4. Environment Configuration
 
 **Backend** (`backend/.env`):
 ```bash
@@ -203,7 +378,24 @@ NEXT_PUBLIC_URL_BACKEND=http://localhost:1337
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-#### 4. Start Development Servers
+#### 5. Configure Strapi Public Permissions
+
+After importing the database or creating content, you must enable public API access:
+
+1. Start the backend: `cd backend && npm run develop`
+2. Go to `http://localhost:1337/admin`
+3. Create first admin user (if fresh database) or log in
+4. Navigate to: **Settings → Users & Permissions → Roles → Public**
+5. Enable these permissions for all content types:
+   - `find` ✓
+   - `findOne` ✓
+6. For Quote content type, also enable:
+   - `create` ✓ (for form submissions)
+7. Click **Save**
+
+**Without these permissions, the frontend will show 403 Forbidden errors.**
+
+#### 6. Start Development Servers
 
 **Backend:**
 ```bash
@@ -211,21 +403,33 @@ cd backend
 npm run develop    # Starts on http://localhost:1337
 ```
 
-**Frontend:**
+**Frontend (choose one):**
+
+*Option A: Local (Recommended for development)*
 ```bash
 cd frontend
 npm run dev        # Starts on http://localhost:3000
 ```
+- ✅ Faster hot-reload
+- ✅ Direct access to logs
+- ✅ Easier debugging
 
-#### 5. Create Strapi Admin User
-- Navigate to `http://localhost:1337/admin`
-- Create first admin user account
-- Start adding content
+*Option B: Docker*
+```bash
+# From project root
+docker-compose up frontend
 
-### Access Points
-- **Frontend**: http://localhost:3000
-- **Backend Admin Panel**: http://localhost:1337/admin
-- **Backend API**: http://localhost:1337/api
+# Or build and run
+docker-compose up --build frontend
+```
+- ✅ Consistent with production
+- ✅ Isolated environment
+- ✅ Test containerized setup
+
+#### 7. Access the Application
+- **Backend Admin**: `http://localhost:1337/admin`
+- **Frontend**: `http://localhost:3000`
+- **API**: `http://localhost:1337/api`
 
 ---
 
@@ -669,6 +873,102 @@ npm start
 
 ---
 
+## Helper Scripts
+
+All helper scripts are located in the `scripts/` folder. See `scripts/README.md` for detailed documentation.
+
+### Database Import (`scripts/import-db.py`)
+
+Imports database from AWS RDS Parquet exports in `db/strapi/` folder.
+
+**Features:**
+- Drops and recreates public schema (clean slate)
+- Creates tables with proper primary keys
+- Sets up PostgreSQL sequences for auto-incrementing IDs
+- Imports all data from Parquet files
+- Automatically resets admin users (by default)
+
+**Usage:**
+```bash
+# Full import with admin reset
+python3 scripts/import-db.py
+
+# Import without resetting admin users
+python3 scripts/import-db.py --skip-admin-reset
+
+# Or use Make command
+make import-db
+```
+
+**Requirements:**
+```bash
+# Create virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Or install manually
+pip install pandas pyarrow psycopg2-binary
+
+# Or install globally (not recommended)
+python3 -m pip install --user pandas pyarrow psycopg2-binary
+```
+
+**Database Connection:**
+Reads from environment variables or defaults:
+- `DATABASE_HOST` (default: `localhost`)
+- `DATABASE_PORT` (default: `5433`)
+- `DATABASE_NAME` (default: `schild_db`)
+- `DATABASE_USERNAME` (default: `postgres`)
+- `DATABASE_PASSWORD` (default: `postgres`)
+
+### Admin Reset (`scripts/reset-admin.py`)
+
+Standalone script to reset Strapi admin users without reimporting data.
+
+**Features:**
+- Deletes all admin users and their role links
+- Clears admin references from content tables (prevents foreign key errors)
+- Allows Strapi to prompt for new admin creation on next startup
+- Safe to run multiple times
+
+**Usage:**
+```bash
+# Direct execution
+python3 scripts/reset-admin.py
+
+# Or use Make command
+make reset-admin
+```
+
+**When to use:**
+- After database import when you can't log in
+- When you've forgotten admin credentials
+- When migrating from production to development
+
+**Requirements:**
+Same as `import-db.py` (uses `psycopg2-binary`)
+
+### Quick Start (`scripts/start.sh`)
+
+One-command setup script for Docker environments.
+
+**Usage:**
+```bash
+./scripts/start.sh
+```
+
+**What it does:**
+1. Checks if Docker is running
+2. Builds Docker images
+3. Starts all services
+4. Imports database (if `db/strapi/` exists)
+5. Shows access URLs and next steps
+
+---
+
 ## Security Considerations
 
 ### Backend Security
@@ -871,9 +1171,9 @@ npm run strapi generate
 
 **Problem**: EBADENGINE warnings or compatibility errors
 - **Solution**: 
-  - Ensure you're using Node 20: `node -v` should show v20.x.x
-  - Switch to Node 20: `nvm use 20`
-  - Set as default: `nvm alias default 20`
+  - Ensure you're using Node 18.10.0: `node -v` should show v18.10.0
+  - Switch to Node 18.10.0: `nvm use 18.10.0` or `nvm use` (if in project directory)
+  - Set as default: `nvm alias default 18.10.0`
   - Clean reinstall: `rm -rf node_modules package-lock.json && npm install`
 
 **Problem**: `nvm: command not found`
@@ -1022,8 +1322,178 @@ For questions or issues:
 
 ---
 
-*Last updated: October 2025*
+## Troubleshooting
 
+### Common Setup Issues
+
+#### 1. Node.js Version Mismatch (`EBADENGINE` warnings)
+**Problem**: Many `EBADENGINE Unsupported engine` warnings during `npm install`
+
+**Solution**:
+```bash
+# Check current Node version
+node -v
+
+# If not 18.10.0, switch using nvm
+nvm use 18.10.0
+
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### 2. Frontend Dependency Conflicts (`ERESOLVE` errors)
+**Problem**: `npm install` fails with peer dependency conflicts
+
+**Solution**:
+```bash
+cd frontend
+npm install --legacy-peer-deps
+```
+
+#### 3. Strapi Won't Start - Database Connection Issues
+**Problem**: Strapi fails to start with database errors
+
+**Solutions**:
+- **PostgreSQL not running**:
+  ```bash
+  # If using Docker
+  docker ps | grep schild-postgres
+  # If not running
+  docker start schild-postgres
+  
+  # If using local PostgreSQL
+  brew services list | grep postgresql
+  brew services start postgresql@15
+  ```
+
+- **Wrong database port**: Check `backend/.env` - Docker uses port 5433, local PostgreSQL uses 5432
+
+#### 4. Frontend Shows Blank Page / "Failed to fetch" Errors
+**Problem**: Frontend loads but shows no content or 403/404 errors
+
+**Common causes and solutions**:
+
+**a) API Permissions Not Set**
+```bash
+# Check if API returns 403 Forbidden
+curl -I http://localhost:1337/api/homepage?populate=deep
+
+# Solution: Enable public permissions in Strapi admin
+# Settings → Users & Permissions → Roles → Public
+# Enable 'find' and 'findOne' for all content types
+```
+
+**b) No Content Published**
+```bash
+# Check if API returns 404 Not Found or empty data
+curl http://localhost:1337/api/homepage?populate=deep
+
+# Solution: Create and publish content in Strapi admin
+# Content Manager → Single Types/Collection Types → Create → Publish
+```
+
+**c) Backend Not Running**
+```bash
+# Check if backend is accessible
+curl http://localhost:1337/admin
+
+# If connection refused, start backend
+cd backend && npm run develop
+```
+
+#### 5. Database Import Errors
+**Problem**: `import-db.py` fails or Strapi won't start after import
+
+**Solutions**:
+
+**a) Missing Python dependencies**:
+```bash
+python3 -m pip install --user pandas pyarrow psycopg2-binary
+```
+
+**b) Database schema conflicts**:
+```bash
+# Reset database and reimport
+docker exec schild-postgres psql -U postgres -d schild_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+python3 import-db.py
+```
+
+**c) Sequence/Primary key issues**:
+- The `import-db.py` script automatically handles sequences
+- If Strapi shows "duplicate key" errors, run the import script again
+
+#### 6. Custom Plugin Errors (`export-to-excel`)
+**Problem**: Backend fails to build with plugin errors
+
+**Solution**: The plugin is currently disabled in `backend/config/plugins.ts`
+```typescript
+"export-to-excel": {
+  enabled: false,  // Temporarily disabled
+  resolve: "./src/plugins/export-to-excel",
+},
+```
+
+To fix and re-enable:
+```bash
+cd backend/src/plugins/export-to-excel
+npm install downloadjs
+npm run build
+```
+
+Then set `enabled: true` in `backend/config/plugins.ts`
+
+#### 7. Images Not Loading
+**Problem**: Images show broken or don't load from AWS S3
+
+**Explanation**: The imported database references production AWS S3 URLs (`https://media.backend.schild.taotor.com/`). These images are not available locally.
+
+**Solutions**:
+- **Development**: Images will be broken - this is expected with imported production data
+- **Upload new images**: Upload images through Strapi admin, they'll be stored locally in `backend/public/uploads/`
+- **Production**: Configure AWS S3 credentials in `backend/.env`
+
+#### 8. React `dangerouslySetInnerHTML` Errors
+**Problem**: Frontend crashes with "`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`"
+
+**Solution**: This is fixed in the codebase. Components using `dangerouslySetInnerHTML` now check for null/undefined content:
+```typescript
+// frontend/src/components/texts/text-paragraph/index.tsx
+if (!content) return null;  // Prevents error when content is missing
+```
+
+If you see this error, restart the frontend:
+```bash
+cd frontend
+pkill -f "npm run dev"
+npm run dev
+```
+
+### Diagnostic Commands
+
+```bash
+# Check if backend is running
+curl http://localhost:1337/admin
+
+# Check if API is accessible
+curl http://localhost:1337/api/homepage?populate=deep
+
+# Check database connection (Docker)
+docker exec schild-postgres psql -U postgres -d schild_db -c "\dt"
+
+# Check Node version
+node -v  # Should be v18.10.0
+
+# Check running processes
+ps aux | grep -E "strapi|next"
+
+# Check Docker containers
+docker ps
+```
+
+---
+
+*Last updated: October 2025*
 
 ---
 

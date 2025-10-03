@@ -47,6 +47,8 @@ out/
 # Temporary files
 .tmp/
 tmp/
+.strapi/
+.strapi-updater.json
 
 # Package manager lock files (choose one)
 # yarn.lock
@@ -63,4 +65,37 @@ coverage/
 *.pid
 *.seed
 *.pid.lock
+
+# Node version - only root .nvmrc should be tracked
+backend/.nvmrc
+frontend/.nvmrc
 .cursor/
+
+# Docker
+.docker/
+docker-compose.override.yml
+.dockerignore
+
+# Database backups
+*.sql
+*.dump
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+env/
+ENV/
+.venv/
+
+# Development files
+.env1
+*.bak
+*.backup

@@ -7,6 +7,8 @@ export interface TextParagraphBigProps {
 export const TextParagraphBigComponent: React.FC<TextParagraphBigProps> = ({
   content,
 }: TextParagraphBigProps) => {
+  if (!content) return null;
+  
   return (
     <div
       className={style.paragraph}

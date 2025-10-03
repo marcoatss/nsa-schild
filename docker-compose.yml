@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: schild-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: schild_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Strapi Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: schild-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      HOST: 0.0.0.0
+      PORT: 1337
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: schild_db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_SSL: false
+      APP_KEYS: ${APP_KEYS:-ULBnL1T8V2dx0vxqHlHT7g==,kkJRR6P9tE/cGvcn3WZtlQ==,UV769DXWvhyhEP2Ih0XLSA==,4z/PbrcIkZe2ABGFf8dJKg==}
+      JWT_SECRET: ${JWT_SECRET:-pml16TyjhSLL/qpVB28HWWfrsofEXgNuCXSwiYJ9Kxw=}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-UrTu4/E1sE7JuYRXL4aEDLfJlEHPZLe0GaVTp1ZlpYY=}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:-Rvk20hwatybF3H7uDlRbN+KO9wTBO8+fdwj/y59Ux+w=}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:-AW3N8N2Lu93vMHfEQXPwWa8B5uZJbsQR6n0fHRg0YvE=}
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_uploads:/app/public/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run develop
+
+  # Next.js Frontend (optional - can run locally with `npm run dev`)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: schild-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_URL_BACKEND: http://localhost:1337
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
+    profiles:
+      - full  # Only starts with: docker-compose --profile full up
+
+  # Database Import Tool (run once)
+  db-import:
+    build:
+      context: .
+      dockerfile: Dockerfile.db-import
+    container_name: schild-db-import
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: schild_db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    volumes:
+      - ./db:/app/db:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+    command: python3 import-db.py
+
+volumes:
+  postgres_data:
+  backend_uploads:
+

@@ -1,0 +1,7 @@
+# Python dependencies for database import scripts
+# Install with: pip install -r requirements.txt
+
+pandas>=2.0.0
+pyarrow>=12.0.0
+psycopg2-binary>=2.9.0
+

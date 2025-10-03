@@ -18,7 +18,7 @@ export default ({ env }) => {
       enabled: true,
     },
     "export-to-excel": {
-      enabled: true,
+      enabled: false, // Temporarily disabled - needs fixing
       resolve: "./src/plugins/export-to-excel",
     },
   };
