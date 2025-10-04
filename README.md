@@ -4,216 +4,87 @@ Product catalog web application with multi-language support (English/German).
 
 ## Stack
 
-- **Backend**: Strapi CMS v4.24.3 (Node.js)
-- **Frontend**: Next.js 14 (React, TypeScript)
-- **Database**: PostgreSQL
+- **Backend**: Strapi CMS v4.24.3 (Docker only)
+- **Frontend**: Next.js 14 (React, TypeScript) 
+- **Database**: PostgreSQL (Docker)
 - **Styling**: Tailwind CSS
-
-## Two Ways to Run
-
-### Option 1: Docker (Recommended) 🐳
-
-**Easiest way to get started!**
-
-```bash
-# Quick start
-./scripts/start.sh
-
-# Or step by step
-make build     # Build images
-make up        # Start all services
-make import-db # Import database
-```
-
-See **[DOCKER.md](DOCKER.md)** for complete Docker documentation.
-
-### Option 2: Local Development
-
-## Prerequisites
-
-- **Node.js 18.10.0** (use nvm to manage versions - see below)
-- **Python 3.8+** (for database import scripts)
-- PostgreSQL (or Docker for database only)
-
-### Important: Node.js Version
-
-This project requires **Node.js 18.10.0**.
-
-#### Install Node Version Manager (nvm)
-
-**macOS/Linux:**
-```bash
-# Download and install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-
-# The script will automatically add nvm to your shell profile
-# Restart terminal or manually load nvm:
-source ~/.zshrc   # for zsh
-source ~/.bashrc  # for bash
-
-# Verify nvm installation
-nvm --version
-```
-
-**Windows:**
-- Download [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)
-- Run the installer
-- Open a new terminal and verify: `nvm version`
-
-**Alternative (macOS with Homebrew):**
-```bash
-brew install nvm
-# Follow post-install instructions to add nvm to your shell profile
-```
-
-#### Install and use Node 18.10.0 with nvm
-
-```bash
-# Install Node 18.10.0
-nvm install 18.10.0
-
-# Use Node 18.10.0 in current session
-nvm use 18.10.0
-
-# Set Node 18.10.0 as default for all new terminals (recommended)
-nvm alias default 18.10.0
-
-# Verify installation
-node -v  # Should show v18.10.0
-npm -v   # Should show v8.19.2
-```
-
-**Pro tip:** This project includes a `.nvmrc` file in the root directory. When you enter the project directory, just run `nvm use` to automatically switch to the correct Node version (18.10.0).
 
 ## Quick Start
 
-### 1. Database Setup (Choose one)
-
-**PostgreSQL with Docker (Recommended):**
+### 1. Clone & Start Backend (Docker)
 ```bash
-docker run -d --name schild-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=schild_db -p 5433:5432 postgres:latest
+git clone <repository-url>
+cd nsa-schild
+
+# Start backend services
+make build
+make up
+
+# IMPORTANT: Import database if ./db folder exists
+make import-db
 ```
 
-**Or SQLite:** No setup needed - Strapi creates `.tmp/data.db` automatically
-
-### 2. Import Production Data (Optional)
-
-If you have database exports in `db/` folder:
+### 2. Start Frontend (Local - Optional)
 ```bash
-python3 -m pip install --user pandas pyarrow psycopg2-binary
-python3 import-db.py
-```
-
-### 3. Backend Setup
-
-```bash
-cd backend
-npm install
-
-# Configure backend/.env:
-# - For Docker PostgreSQL: DATABASE_PORT=5433
-# - Generate secrets: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-
-npm run develop       # Starts on http://localhost:1337
-```
-
-Create admin at `http://localhost:1337/admin`, then **enable public API permissions**:
-- Settings → Users & Permissions → Roles → Public
-- Enable `find` and `findOne` for all content types
-
-### 4. Frontend Setup
-
-```bash
+# For faster development, run frontend locally
 cd frontend
 npm install
-
-# Edit frontend/.env for local dev:
-# NEXT_PUBLIC_URL_BACKEND=http://localhost:1337
-# NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-npm run dev           # Starts on http://localhost:3000
+npm run dev
 ```
 
-## Environment Variables
+### 3. Access Application
+- **Backend Admin**: http://localhost:1337/admin
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:1337/api
 
-### Backend (`backend/.env`)
+## Prerequisites
 
-The project includes a `backend/.env` file with empty values. Configure it for your environment:
+- **Docker & Docker Compose** (for backend)
+- **Node.js 18.10.0** (for frontend development only)
+- **Python 3.8+** (for database import scripts)
 
-**For local development with PostgreSQL:**
-```bash
-# Database
-DATABASE_CLIENT=postgres
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_NAME=schild_db
-DATABASE_USERNAME=your_username
-DATABASE_PASSWORD=your_password
+## Important Notes
 
-# Secrets (generate with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")
-APP_KEYS=key1,key2,key3,key4
-JWT_SECRET=your_jwt_secret
-ADMIN_JWT_SECRET=your_admin_jwt_secret
-API_TOKEN_SALT=your_api_token_salt
-TRANSFER_TOKEN_SALT=your_transfer_token_salt
+> **⚠️ Database Import is MANDATORY**  
+> If the `./db` folder exists, you MUST import the database before starting the backend.  
+> The system will block you if you skip this step.
 
-# Environment
-NODE_ENV=development
-HOST=0.0.0.0
-PORT=1337
-```
+> **⚠️ Backend runs in Docker only**  
+> No local Node.js installation needed for backend development.
 
-**For local development with SQLite (easier):**
-```bash
-# Leave DATABASE_CLIENT empty or set to sqlite
-DATABASE_CLIENT=sqlite
-DATABASE_FILENAME=.tmp/data.db
+## Setup Frontend Locally (Optional)
 
-# Secrets (generate as above)
-APP_KEYS=key1,key2,key3,key4
-JWT_SECRET=your_jwt_secret
-ADMIN_JWT_SECRET=your_admin_jwt_secret
-API_TOKEN_SALT=your_api_token_salt
-TRANSFER_TOKEN_SALT=your_transfer_token_salt
-
-# Environment
-NODE_ENV=development
-```
-
-### Frontend (`frontend/.env`)
-
-The project includes a `frontend/.env` file with production URLs. Update it for local development:
+If you want faster frontend development:
 
 ```bash
-# Local development
-NEXT_PUBLIC_URL_BACKEND=http://localhost:1337
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Install Node 18.10.0 (if not installed)
+nvm install 18.10.0
+nvm use 18.10.0
 
-# Production (already configured in the file)
-# NEXT_PUBLIC_URL_BACKEND=https://backend.schild.taotor.com
-# NEXT_PUBLIC_SITE_URL=https://www.schild-einrichtung.de
-```
-
-## Project Structure
-
-```
-nsa-schild/
-├── backend/          # Strapi CMS (port 1337)
-├── frontend/         # Next.js app (port 3000)
-└── db/              # Database exports (not tracked in git)
+# Install frontend dependencies
+cd frontend
+npm install
+npm run dev
 ```
 
 ## Commands
 
-**Backend:**
-- `npm run develop` - Development mode with auto-reload
-- `npm run build` - Build for production
-- `npm run start` - Start production server
+**Backend (Docker):**
+```bash
+make build         # Build Docker images
+make up            # Start backend services
+make down          # Stop all services
+make logs          # View container logs
+make import-db     # Import database from ./db folder
+make reset-admin   # Reset admin users
+```
 
-**Frontend:**
-- `npm run dev` - Development mode
-- `npm run build` - Build for production
-- `npm run start` - Start production server
+**Frontend (Local):**
+```bash
+npm run dev        # Start development server
+npm run build      # Build for production
+npm run start      # Start production server
+```
 
 ## Features
 
@@ -228,20 +99,17 @@ nsa-schild/
 ## Troubleshooting
 
 **Frontend shows blank page?**
-- Enable public API permissions in Strapi (see step 3 above)
+- Enable public API permissions in Strapi admin
 - Ensure content is published in Strapi admin
 
-**Images not loading?**
-- Expected with imported production data (references AWS S3)
-- Upload new images via Strapi admin for local development
+**Database import issues?**
+- Check if `./db` folder exists
+- Run `make import-db` before starting backend
 
-**More issues?** See [AGENT.md](./AGENT.md) troubleshooting section
+**More issues?** See [AGENT.md](./AGENT.md) for comprehensive troubleshooting
 
 ## Documentation
 
-- **[AGENT.md](./AGENT.md)** - Comprehensive guide for AI assistants and developers
-
-## License
-
-© 2025. All rights reserved.
+- **[AGENT.md](./AGENT.md)** - Complete developer guide
+- **[DOCKER.md](./DOCKER.md)** - Docker setup details
 
