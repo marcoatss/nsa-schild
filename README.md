@@ -2,88 +2,74 @@
 
 Product catalog web application with multi-language support (English/German).
 
-## Stack
+## Prerequisites
 
-- **Backend**: Strapi CMS v4.24.3 (Docker only)
-- **Frontend**: Next.js 14 (React, TypeScript) 
-- **Database**: PostgreSQL (Docker)
-- **Styling**: Tailwind CSS
+- Docker & Docker Compose (for backend)
+- Node.js 18.10.0 (for frontend development only)
+- Python 3.8+ (for database import scripts)
 
 ## Quick Start
 
-### 1. Clone & Start Backend (Docker)
+### First Time Setup
+
 ```bash
-git clone <repository-url>
-cd nsa-schild
+# 1. Set database export path (REQUIRED - must be outside this repository)
+export DB_EXPORT_PATH=/path/to/your/database/export
 
-# Start backend services
-make build
-make up
+# 2. Complete setup (builds images, starts services, prompts for database import)
+make setup
 
-# IMPORTANT: Import database if ./db folder exists
-make import-db
-```
+# 3. Create Strapi admin on first visit
+# Open http://localhost:1337/admin and create the first admin user
 
-### 2. Start Frontend (Local - Optional)
-```bash
-# For faster development, run frontend locally
+# 4. Run the frontend
 cd frontend
 npm install
 npm run dev
 ```
 
-### 3. Access Application
-- **Backend Admin**: http://localhost:1337/admin
-- **Frontend**: http://localhost:3000
-- **API**: http://localhost:1337/api
-
-## Prerequisites
-
-- **Docker & Docker Compose** (for backend)
-- **Node.js 18.10.0** (for frontend development only)
-- **Python 3.8+** (for database import scripts)
-
-## Important Notes
-
-> **⚠️ Database Import is MANDATORY**  
-> If the `./db` folder exists, you MUST import the database before starting the backend.  
-> The system will block you if you skip this step.
-
-> **⚠️ Backend runs in Docker only**  
-> No local Node.js installation needed for backend development.
-
-## Setup Frontend Locally (Optional)
-
-If you want faster frontend development:
+### Daily Use
 
 ```bash
-# Install Node 18.10.0 (if not installed)
-nvm install 18.10.0
-nvm use 18.10.0
+# Start services (prompts for import if database not imported)
+make start
 
-# Install frontend dependencies
-cd frontend
-npm install
-npm run dev
+# Stop services (keeps data)
+make stop
 ```
+
+## Access
+
+- Strapi Admin: http://localhost:1337/admin
+- Next.js App: http://localhost:3000
+
+## Stack
+
+- Backend: Strapi CMS v4.24.3 + PostgreSQL 15.6 (exact: sha256:1ebd963e5c598f944a4e9ba27de4c95289d663dcc73731025aa53c5254094d8f)
+- Frontend: Next.js 14 (React, TypeScript, Tailwind CSS)
 
 ## Commands
 
-**Backend (Docker):**
+**Essential:**
 ```bash
-make build         # Build Docker images
-make up            # Start backend services
-make down          # Stop all services
-make logs          # View container logs
-make import-db     # Import database from ./db folder
-make reset-admin   # Reset admin users
+make setup         # First-time setup (builds + starts + prompts for DB import)
+make start         # Start services (prompts for import if database not imported)
+make stop          # Stop services (keeps data)
+make destroy       # Destroy everything including data (⚠️ requires typing "DESTROY")
 ```
 
-**Frontend (Local):**
+**Database (when needed):**
 ```bash
-npm run dev        # Start development server
-npm run build      # Build for production
-npm run start      # Start production server
+export DB_EXPORT_PATH=/absolute/path/outside/this/repo
+make import-db     # Import database (requires DB_EXPORT_PATH)
+make force-import  # Force re-import (destroys existing data)
+make reset-admin   # Reset Strapi admin users
+```
+
+**Development:**
+```bash
+make logs          # View backend logs
+cd frontend && npm install && npm run dev    # Frontend development
 ```
 
 ## Features
@@ -98,18 +84,16 @@ npm run start      # Start production server
 
 ## Troubleshooting
 
-**Frontend shows blank page?**
-- Enable public API permissions in Strapi admin
-- Ensure content is published in Strapi admin
-
-**Database import issues?**
-- Check if `./db` folder exists
-- Run `make import-db` before starting backend
-
-**More issues?** See [AGENT.md](./AGENT.md) for comprehensive troubleshooting
+- Sharp module error
+```bash
+# Ensure placeholder plugin is disabled
+# File: backend/config/plugins.ts
+# Set: placeholder.enabled = false
+make restart
+```
+- More issues? See `AGENT.md` for comprehensive troubleshooting.
 
 ## Documentation
 
-- **[AGENT.md](./AGENT.md)** - Complete developer guide
-- **[DOCKER.md](./DOCKER.md)** - Docker setup details
-
+- `AGENT.md` - Complete developer guide
+- `DOCKER.md` - Docker setup details

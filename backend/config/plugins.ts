@@ -9,7 +9,7 @@ export default ({ env }) => {
       enabled: true,
     },
     placeholder: {
-      enabled: true,
+      enabled: false, // Optional plugin - not needed for core functionality
       config: {
         size: 10,
       },

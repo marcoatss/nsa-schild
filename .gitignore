@@ -18,6 +18,9 @@ db/strapi/
 db/*.parquet
 db/export_*.json
 
+# Database import state
+.db_imported
+
 # IDE and Editor files
 .vscode/
 .idea/

@@ -38,7 +38,7 @@
 **NSA-Schild** is a full-stack product catalog web application with:
 - **Backend**: Strapi CMS v4.24.3 (headless CMS)
 - **Frontend**: Next.js 14.1.4 with TypeScript
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL 15.6 (exact: sha256:1ebd963e5c598f944a4e9ba27de4c95289d663dcc73731025aa53c5254094d8f)
 - **Languages**: Multi-language support (English, German) via i18n
 
 ### Key Features
@@ -68,7 +68,7 @@ nsa-schild/
 - **Framework**: Strapi v4.24.3
 - **Port**: 1337 (default)
 - **API Style**: REST API with GraphQL support
-- **Database**: PostgreSQL (production), SQLite (development default)
+- **Database**: PostgreSQL 15.6 (exact: sha256:1ebd963e5c598f944a4e9ba27de4c95289d663dcc73731025aa53c5254094d8f) (production), SQLite (development default)
 
 **Key Strapi Plugins:**
 - `@strapi/plugin-i18n` - Internationalization
@@ -112,7 +112,7 @@ nsa-schild/
 ```bash
 make build        # Build Docker images
 make up           # Start all services
-make import-db    # Import database (if ./db folder exists)
+make import-db    # Import database (requires DB_EXPORT_PATH)
 ```
 
 See **[DOCKER.md](DOCKER.md)** for complete Docker setup and commands.
@@ -152,19 +152,14 @@ git clone <repository-url>
 cd nsa-schild
 ```
 
-#### 2. Database Import (MANDATORY if ./db folder exists)
+#### 2. Database Import (Optional - External Path Required)
 
-> **⚠️ CRITICAL: Database Import Requirement**  
-> If the `./db` folder exists in the project root, **you MUST import the database** before starting the backend.  
-> **The system will block you if you attempt to start without importing the database.**
+> **📋 Database Import Information**  
+> Database import is **optional** but recommended for full functionality.  
+> If you choose to import, it requires an external path via `DB_EXPORT_PATH` environment variable.  
+> **The system blocks imports from repository paths for security.**
 
-**Check for database folder:**
-```bash
-ls -la ./db
-# If this folder exists, proceed with import
-```
-
-**If ./db folder exists, import is MANDATORY:**
+**Database import requires external path:**
 
 ```bash
 # Create Python virtual environment (recommended)
@@ -174,17 +169,21 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install Python dependencies
 pip install -r requirements.txt
 
-# IMPORTANT: Import database BEFORE starting backend
+# IMPORTANT: Set external database path and import
+export DB_EXPORT_PATH=/path/to/your/database/export
 python3 scripts/import-db.py
 
 # The script will:
 # - Drop and recreate the public schema (clean slate)
-# - Read Parquet files from db/strapi/
+# - Auto-detect export structure (handles nested /strapi subdirectories)
+# - Recursively find Parquet files (supports AWS export format)
 # - Create tables with proper primary keys and sequences
 # - Import all content (products, categories, media, etc.)
+# - Validate content import and show record counts
 # - Reset admin users (allows you to create a new admin on next Strapi startup)
 
 # Alternative: Use Make command
+export DB_EXPORT_PATH=/path/to/your/database/export
 make import-db      # Runs import-db.py automatically
 
 # After import, you can optionally reset admin users anytime:
@@ -192,14 +191,18 @@ python3 scripts/reset-admin.py
 # Or: make reset-admin
 ```
 
-**⚠️ WARNING: Database Import is MANDATORY**  
-If you attempt to start the backend without importing the database when `./db` folder exists, the system will:
-1. **Block the startup process**
-2. **Show a clear error message**
-3. **Ask for user confirmation to proceed**
-4. **Require explicit confirmation to continue without import**
+**📁 Supported Export Formats:**
+- **Flat structure**: `/export/*.parquet`
+- **Nested structure**: `/export/strapi/public.*/1/*.parquet` (AWS format)
+- **Auto-detection**: Script automatically finds the correct structure
 
-**Note**: The `db/` folder contains AWS RDS Parquet exports and is ignored by git. The `import-db.py` script handles converting Parquet files to PostgreSQL tables. After import, Strapi will prompt you to create a new admin user on first startup.
+**⚠️ WARNING: Database Import Security**  
+The system enforces security by:
+1. **Requiring external path**: `DB_EXPORT_PATH` environment variable is mandatory
+2. **Blocking repository paths**: No imports allowed from within the repository
+3. **Clear error messages**: Instructions provided when path is missing or invalid
+
+**Note**: Database exports should be stored outside the repository for security. The `import-db.py` script handles converting Parquet files to PostgreSQL tables. After import, Strapi will prompt you to create a new admin user on first startup.
 
 #### 3. Start Backend Services (Docker)
 
@@ -1088,14 +1091,27 @@ npm run strapi generate
 
 ### Development Commands
 
-**Backend (Docker):**
+**Setup & Daily Use:**
 ```bash
-make build         # Build Docker images
-make up            # Start backend services (PostgreSQL + Strapi)
-make down          # Stop all services
-make logs          # View container logs
-make import-db     # Import database from ./db folder
+make setup         # First-time setup (build + start + prompts for optional import)
+make start         # Start services (prompts for import if database not imported)
+make stop          # Stop services (keeps data)
+make restart       # Restart all services
+make destroy       # Destroy everything (ALL DATA LOST!)
+```
+
+**Database Management:**
+```bash
+make import-db     # Import database (requires DB_EXPORT_PATH)
+make force-import  # Force re-import (destroys existing data)
 make reset-admin   # Reset admin users
+```
+
+**Development:**
+```bash
+make logs          # View container logs
+make backend       # View backend logs only
+make frontend      # View frontend logs only
 ```
 
 **Frontend (Local Development):**
@@ -1104,6 +1120,131 @@ npm run dev        # Start development server
 npm run build      # Build for production
 npm run start      # Start production server
 npm run lint       # Run ESLint
+```
+
+### Container Management Commands
+
+**Service Control:**
+- `make setup` - First-time setup (build + start + optional import)
+- `make start` - Starts services (prompts for import if needed)
+- `make stop` - Stops containers and removes them (clean shutdown)
+- `make destroy` - Destroys everything including volumes (⚠️ DANGER)
+
+**Database Import:**
+- `make import-db` - Imports database (requires external path)
+- `make force-import` - Force re-import (destroys existing data)
+- Required: `export DB_EXPORT_PATH=/path/to/external/database`
+- **INTERACTIVE**: Application prompts for import choice on startup with automatic execution
+
+**Container Count**: 2 containers by default (postgres + backend)
+
+### Interactive Database Import System
+
+**New Interactive Flow:**
+- `make setup` and `make start` now prompt user for database import choice
+- If user chooses "y": System executes import using pre-set DB_EXPORT_PATH
+- If user chooses "n": System proceeds without import (empty database)
+- After successful import: System automatically restarts Strapi to apply changes
+
+**User Experience:**
+```
+⚠️  Database not imported yet!
+   This application works best with imported data.
+   Would you like to import the database now?
+   
+   (Make sure to set: export DB_EXPORT_PATH=/path/to/database)
+   
+   Import database? (y/n): y
+   Starting database import...
+   ✅ Database imported successfully!
+   Restarting services to apply changes...
+```
+
+### Enhanced Startup System
+
+**Improved `make start` Command:**
+- **Waits for Strapi**: Only shows success when Strapi admin is actually ready
+- **Progress Display**: Shows "Waiting for Strapi..." with timeout
+- **Timeout**: 120 seconds maximum wait time
+- **Interactive Import**: Prompts user for database import with automatic execution
+- **Error Handling**: Clear error message if timeout exceeded
+
+**Alternative Commands:**
+- `make start-logs` - Start with live logs (traditional docker-compose up)
+- `make start-wait` - Start and wait silently (no progress messages)
+- `make stop` - Stop containers but keep them (faster restart)
+
+**Startup Flow:**
+1. Start Docker containers (`docker-compose up -d`)
+2. Wait for PostgreSQL to be healthy
+3. Wait for Strapi admin endpoint to respond
+4. Display success message with URLs
+
+### Database Import Configuration
+
+**Configurable Database Path:**
+The database import system now supports custom paths for security and flexibility.
+
+**Required External Path:**
+```bash
+# ❌ This will fail (path required)
+make import-db
+# ❌ ERROR: Database import requires external path!
+
+# ✅ This works (external path provided)
+export DB_EXPORT_PATH=/path/to/your/database/export
+make import-db
+# ✅ Importing database...
+# 📂 Using path: /path/to/your/database/export
+```
+
+**Security Features:**
+- **External Path Required**: `DB_EXPORT_PATH` environment variable is mandatory
+- **Repository Block**: Prevents import from paths inside the repository
+- **Path Validation**: Uses absolute paths for safe comparison
+- **Clear Messages**: Explains the issue and provides solutions
+- **Exit on Violation**: Script terminates with error code if security violated
+
+**Use Cases:**
+- Import from external backup locations
+- Import from different environments (dev/staging/prod)
+- Import from network drives or cloud storage
+- Import from compressed archives (extract first)
+
+### Database Schema Information
+
+**Total Tables: 88**
+The PostgreSQL database contains 88 tables, all created by Strapi itself:
+
+**Table Categories:**
+- **Content Types**: Tables for custom content (products, categories, etc.)
+- **System Tables**: Strapi's internal tables for users, roles, permissions
+- **Media Tables**: File uploads, image metadata
+- **Relation Tables**: Many-to-many relationship tables
+- **Audit Tables**: Created/updated tracking for content
+
+**Key Tables:**
+- `products` - Product catalog entries
+- `categories` - Product categories
+- `subcategories` - Product subcategories
+- `admin_users` - Strapi admin panel users
+- `files` - Uploaded file metadata
+- `strapi_*` - Strapi system tables
+
+**Schema Generation:**
+- Tables are created automatically by Strapi on first startup
+- Based on content type definitions in `backend/src/api/*/content-types/`
+- No manual database schema creation required
+- DDL reflects the developed content structure perfectly
+
+**Verification:**
+```sql
+-- Check total table count
+SELECT COUNT(*) FROM information_schema.tables 
+WHERE table_schema = 'public';
+
+-- View Strapi's schema records
+SELECT * FROM strapi_database_schema;
 ```
 
 ### Key Files to Know
@@ -1148,28 +1289,29 @@ For questions or issues:
 
 ### Common Setup Issues
 
-#### 1. Database Import Not Performed (CRITICAL)
-**Problem**: Attempting to start backend without importing database when `./db` folder exists
+#### 1. Database Import Not Performed (Optional)
+**Problem**: Application starts with empty database (no content)
 
 **Solution**:
 ```bash
-# Check if ./db folder exists
-ls -la ./db
+# Set database export path
+export DB_EXPORT_PATH=/path/to/your/database/export
 
-# If folder exists, import is MANDATORY
-python3 scripts/import-db.py
-# Or: make import-db
+# Import database
+make import-db
+# Or: python3 scripts/import-db.py
 
 # Then start backend
 make up
 ```
 
-**Error message you'll see if skipping import:**
+**Error message you'll see without external path:**
 ```
-ERROR: Database import is MANDATORY when ./db folder exists
-Please run: python3 scripts/import-db.py
-Or use: make import-db
+❌ ERROR: Database import requires external path!
+   Usage: export DB_EXPORT_PATH=/path/to/database && make import-db
 ```
+
+**Security Feature**: The system requires external paths and blocks imports from repository paths for safety.
 
 #### 2. Docker Services Not Starting
 **Problem**: Backend services fail to start in Docker
@@ -1245,18 +1387,73 @@ make up
 python3 -m pip install --user pandas pyarrow psycopg2-binary
 ```
 
-**b) Database schema conflicts**:
+**b) No Parquet files found**:
+```bash
+# Check export structure
+ls -la /path/to/export/
+# Should contain .parquet files or /strapi subdirectory
+
+# The script now supports:
+# - Flat: /export/*.parquet
+# - Nested: /export/strapi/public.*/1/*.parquet (AWS format)
+```
+
+**c) Database schema conflicts**:
 ```bash
 # Reset database and reimport
 docker-compose exec postgres psql -U postgres -d schild_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 python3 scripts/import-db.py
 ```
 
-**c) Sequence/Primary key issues**:
+**d) Sequence/Primary key issues**:
 - The `import-db.py` script automatically handles sequences
 - If Strapi shows "duplicate key" errors, run the import script again
 
-#### 6. Custom Plugin Errors (`export-to-excel`)
+**e) Content validation warnings**:
+```bash
+# If import succeeds but shows "No content data found":
+# 1. Check if export contains actual content (not just schema)
+# 2. Verify Parquet files have data (not empty)
+# 3. The script now shows detailed validation results
+```
+
+**f) Database path configuration**:
+```bash
+# Database import requires external path
+export DB_EXPORT_PATH=/path/to/external/database
+make import-db
+```
+
+#### 6. Sharp Module Error (Apple Silicon / ARM64)
+**Problem**: `Cannot find module '../build/Release/sharp-linuxmusl-arm64v8.node'` error
+
+**Root Cause**: The `strapi-plugin-placeholder` requires Node.js `^18.17.0 || ^20.3.0 || >=21.0.0` but Docker container uses Node.js `18.10.0`.
+
+**Recommended Solution**: Keep the placeholder plugin disabled (it's optional):
+
+```bash
+# Edit backend/config/plugins.ts
+# Change placeholder.enabled from true to false
+placeholder: {
+  enabled: false, // Optional plugin - not needed for core functionality
+  config: {
+    size: 10,
+  },
+},
+
+# Restart backend
+make restart
+```
+
+**Why this plugin is optional**: The `strapi-plugin-placeholder` only provides blur-to-sharp image loading effects in the carousel component. The system works perfectly without it.
+
+**Alternative Solution**: Upgrade Node.js in Docker container (requires Dockerfile modification):
+```dockerfile
+# In backend/Dockerfile, change FROM line to:
+FROM node:18.17.0-alpine
+```
+
+#### 7. Custom Plugin Errors (`export-to-excel`)
 **Problem**: Backend fails to build with plugin errors
 
 **Solution**: The plugin is currently disabled in `backend/config/plugins.ts`
@@ -1287,7 +1484,44 @@ make build
 make up
 ```
 
-#### 7. Images Not Loading
+#### 8. Container Management Issues
+**Problem**: Need to manage containers without losing data
+
+**Solutions**:
+```bash
+# Stop containers but keep them (fast restart)
+make stop
+
+# Stop and remove containers (clean shutdown)
+make down
+
+# Destroy everything including data (DANGER)
+make destroy
+
+# Restart services
+make restart
+```
+
+#### 9. Startup Timeout Issues
+**Problem**: `make up` times out waiting for Strapi
+
+**Solutions**:
+```bash
+# Check logs for errors
+make logs
+
+# Try alternative startup with live logs
+make up-logs
+
+# Try silent startup
+make up-wait
+
+# Manual restart
+make down
+make up
+```
+
+#### 10. Images Not Loading
 **Problem**: Images show broken or don't load from AWS S3
 
 **Explanation**: The imported database references production AWS S3 URLs (`https://media.backend.schild.taotor.com/`). These images are not available locally.
@@ -1297,7 +1531,7 @@ make up
 - **Upload new images**: Upload images through Strapi admin, they'll be stored locally in `backend/public/uploads/`
 - **Production**: Configure AWS S3 credentials in `backend/.env`
 
-#### 8. React `dangerouslySetInnerHTML` Errors
+#### 11. React `dangerouslySetInnerHTML` Errors
 **Problem**: Frontend crashes with "`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`"
 
 **Solution**: This is fixed in the codebase. Components using `dangerouslySetInnerHTML` now check for null/undefined content:

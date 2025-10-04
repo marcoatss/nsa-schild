@@ -23,6 +23,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "5.3.4",
+    "sharp": "^0.34.4",
     "strapi-plugin-placeholder": "^4.4.0",
     "strapi-plugin-populate-deep": "^3.0.1",
     "strapi-plugin-vercel-deploy": "^1.4.0",
