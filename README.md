@@ -22,8 +22,11 @@ make setup
 # 3. Create Strapi admin on first visit
 # Open http://localhost:1337/admin and create the first admin user
 
-# 4. Run the frontend
+# 4. Configure frontend environment
 cd frontend
+cp .env.example .env.local  # Creates local environment file
+
+# 5. Run the frontend
 npm install
 npm run dev
 ```
@@ -31,17 +34,24 @@ npm run dev
 ### Daily Use
 
 ```bash
-# Start services (prompts for import if database not imported)
-make start
+# Backend only (recommended)
+make start              # Start backend + database
 
-# Stop services (keeps data)
+# Then run frontend locally (faster development)
+cd frontend
+npm run dev             # Frontend at http://localhost:3000
+
+# OR run everything in Docker (slower)
+make start-full         # Start backend + frontend + database
+
+# Stop services
 make stop
 ```
 
 ## Access
 
-- Strapi Admin: http://localhost:1337/admin
-- Next.js App: http://localhost:3000
+- **Strapi Admin**: http://localhost:1337/admin
+- **Next.js App**: http://localhost:3000 (run `cd frontend && npm run dev` OR `make start-full`)
 
 ## Stack
 
@@ -91,14 +101,28 @@ cd frontend && npm install && npm run dev    # Frontend development
 
 ## Troubleshooting
 
-- Sharp module error
+**Frontend shows "Failed to parse URL" or connection errors:**
+```bash
+# Create/update frontend environment file
+cd frontend
+cp .env.example .env.local
+# Restart frontend dev server
+```
+
+**Sharp module error:**
 ```bash
 # Ensure placeholder plugin is disabled
 # File: backend/config/plugins.ts
 # Set: placeholder.enabled = false
 make restart
 ```
-- More issues? See `AGENT.md` for comprehensive troubleshooting.
+
+**Frontend not accessible at localhost:3000:**
+- Backend runs in Docker by default (only port 1337)
+- Frontend must be run locally: `cd frontend && npm run dev`
+- OR start everything in Docker: `make start-full`
+
+More issues? See `AGENT.md` for comprehensive troubleshooting.
 
 ## Documentation
 

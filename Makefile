@@ -11,8 +11,9 @@ help:
 	@echo "  make setup              - Complete first-time setup (build + import + start)"
 	@echo ""
 	@echo "Daily Use:"
-	@echo "  make start              - Start services (prompts for import if needed)"
-	@echo "  make start-logs         - Start all services with live logs"
+	@echo "  make start              - Start services (backend only, prompts for import)"
+	@echo "  make start-logs         - Start services with live logs"
+	@echo "  make start-full         - Start ALL services including frontend"
 	@echo "  make start-wait         - Start services and wait silently"
 	@echo "  make stop               - Stop all services (remove containers)"
 	@echo "  make restart            - Restart all services"
@@ -198,6 +199,10 @@ start:
 # Start all services with live logs
 start-logs:
 	docker compose up
+
+# Start all services including frontend (with live logs)
+start-full:
+	docker compose --profile full up
 
 # Start services and wait (without showing progress)
 start-wait:
