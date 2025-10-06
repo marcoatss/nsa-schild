@@ -42,7 +42,8 @@ cd frontend
 npm run dev             # Frontend at http://localhost:3000
 
 # OR run everything in Docker (slower)
-make start-full         # Start backend + frontend + database
+make start-full-detached # Start backend + frontend + database (background)
+make start-full         # Start with live logs (blocks terminal)
 
 # Stop services
 make stop
@@ -51,7 +52,7 @@ make stop
 ## Access
 
 - **Strapi Admin**: http://localhost:1337/admin
-- **Next.js App**: http://localhost:3000 (run `cd frontend && npm run dev` OR `make start-full`)
+- **Next.js App**: http://localhost:3000 (run `cd frontend && npm run dev` OR `make start-full-detached`)
 
 ## Stack
 
@@ -120,7 +121,11 @@ make restart
 **Frontend not accessible at localhost:3000:**
 - Backend runs in Docker by default (only port 1337)
 - Frontend must be run locally: `cd frontend && npm run dev`
-- OR start everything in Docker: `make start-full`
+- OR start everything in Docker: `make start-full-detached` (background)
+
+**Terminal blocked when using `make start-full`:**
+- Use `make start-full-detached` to run in background
+- Or press `Ctrl+C` to stop, then use detached version
 
 More issues? See `AGENT.md` for comprehensive troubleshooting.
 

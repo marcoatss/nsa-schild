@@ -13,7 +13,8 @@ help:
 	@echo "Daily Use:"
 	@echo "  make start              - Start services (backend only, prompts for import)"
 	@echo "  make start-logs         - Start services with live logs"
-	@echo "  make start-full         - Start ALL services including frontend"
+	@echo "  make start-full         - Start ALL services with live logs (blocks terminal)"
+	@echo "  make start-full-detached - Start ALL services in background"
 	@echo "  make start-wait         - Start services and wait silently"
 	@echo "  make stop               - Stop all services (remove containers)"
 	@echo "  make restart            - Restart all services"
@@ -203,6 +204,10 @@ start-logs:
 # Start all services including frontend (with live logs)
 start-full:
 	docker compose --profile full up
+
+# Start all services including frontend (detached)
+start-full-detached:
+	docker compose --profile full up -d
 
 # Start services and wait (without showing progress)
 start-wait:
