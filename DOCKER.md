@@ -63,8 +63,13 @@ make import-db
 **Option C: Direct Docker command**
 ```bash
 export DB_EXPORT_PATH=/path/to/database
-docker compose run --rm -e DB_EXPORT_PATH="$DB_EXPORT_PATH" -v "$DB_EXPORT_PATH:/external/db:ro" db-import
+docker compose run --rm -e DB_EXPORT_PATH="/external/db" -v "$DB_EXPORT_PATH:/external/db:ro" db-import
 ```
+
+**How it works:**
+- Host path: `$DB_EXPORT_PATH` (your actual database location)
+- Container path: `/external/db` (mounted volume inside container)
+- The script sees: `/external/db` inside the container
 
 This will:
 - Import all data from Parquet files in your export path

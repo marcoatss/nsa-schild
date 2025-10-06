@@ -322,13 +322,14 @@ import-db:
 import-db-docker:
 	@echo "🚀 Importing database (Docker)..."
 	@if [ -n "$$DB_EXPORT_PATH" ]; then \
-		echo "📂 Using path: $$DB_EXPORT_PATH"; \
+		echo "📂 Using host path: $$DB_EXPORT_PATH"; \
+		echo "📂 Mounting to container at: /external/db"; \
 	else \
 		echo "❌ DB_EXPORT_PATH is required!"; \
 		echo "   Usage: export DB_EXPORT_PATH=/path/to/database && make import-db-docker"; \
 		exit 1; \
 	fi
-	@docker compose run --rm -e DB_EXPORT_PATH="$$DB_EXPORT_PATH" -v "$$DB_EXPORT_PATH:/external/db:ro" db-import python3 import-db.py
+	@docker compose run --rm -e DB_EXPORT_PATH="/external/db" -v "$$DB_EXPORT_PATH:/external/db:ro" db-import python3 import-db.py
 	@if [ $$? -eq 0 ]; then \
 		echo "✅" > $(DB_STATE_FILE); \
 		echo ""; \
