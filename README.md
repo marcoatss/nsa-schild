@@ -61,7 +61,14 @@ make destroy       # Destroy everything including data (⚠️ requires typing "
 **Database (when needed):**
 ```bash
 export DB_EXPORT_PATH=/absolute/path/outside/this/repo
-make import-db     # Import database (requires DB_EXPORT_PATH)
+
+# Option 1: Import using local Python (requires: pip install -r requirements.txt)
+make import-db
+
+# Option 2: Import using Docker (no Python setup needed)
+make import-db-docker
+
+# Other database commands
 make force-import  # Force re-import (destroys existing data)
 make reset-admin   # Reset Strapi admin users
 ```

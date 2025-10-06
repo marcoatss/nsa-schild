@@ -43,21 +43,31 @@ Services will be available at:
 
 > **💡 Recommendation**: Run frontend locally (`npm run dev`) for faster hot-reload and easier debugging. Use Docker only when you need to test the full containerized setup.
 
-### 2. Import Database (if you have `db/` folder)
+### 2. Import Database (Optional)
 
+**REQUIRED: Set database export path first**
 ```bash
-# Using Make (runs locally)
-make import-db
+export DB_EXPORT_PATH=/path/to/your/database/export
+```
 
-# Or using Docker
+**Option A: Using Docker (Recommended - No Python setup needed)**
+```bash
 make import-db-docker
+```
 
-# Or using docker-compose directly
-docker-compose run --rm db-import
+**Option B: Using local Python (Requires: pip install -r requirements.txt)**
+```bash
+make import-db
+```
+
+**Option C: Direct Docker command**
+```bash
+export DB_EXPORT_PATH=/path/to/database
+docker compose run --rm -e DB_EXPORT_PATH="$DB_EXPORT_PATH" -v "$DB_EXPORT_PATH:/external/db:ro" db-import
 ```
 
 This will:
-- Import all data from `db/strapi/` Parquet files
+- Import all data from Parquet files in your export path
 - Reset admin users (allows you to create a new admin)
 - Set up proper primary keys and sequences
 

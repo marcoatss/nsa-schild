@@ -18,11 +18,12 @@ help:
 	@echo "  make restart            - Restart all services"
 	@echo ""
 	@echo "Database Management:"
-	@echo "  make import-db          - Import database (requires DB_EXPORT_PATH)"
+	@echo "  make import-db          - Import database using local Python"
+	@echo "  make import-db-docker   - Import database using Docker (no Python setup)"
 	@echo "  make reset-admin        - Reset admin users (allows new admin creation)"
 	@echo "  make force-import       - Force re-import database (destroys existing data)"
 	@echo ""
-	@echo "  Custom DB path: export DB_EXPORT_PATH=/path/to/database"
+	@echo "  Required: export DB_EXPORT_PATH=/path/to/database"
 	@echo ""
 	@echo "Development:"
 	@echo "  make logs               - View logs from all services"
@@ -319,11 +320,25 @@ import-db:
 
 # Import database (Docker)
 import-db-docker:
-	@echo "🚀 Importing database from db/strapi folder (Docker)..."
-	docker compose run --rm db-import python3 import-db.py
-	@echo ""
-	@echo "✅ Database imported!"
-	@echo "   Restart backend with: make restart"
+	@echo "🚀 Importing database (Docker)..."
+	@if [ -n "$$DB_EXPORT_PATH" ]; then \
+		echo "📂 Using path: $$DB_EXPORT_PATH"; \
+	else \
+		echo "❌ DB_EXPORT_PATH is required!"; \
+		echo "   Usage: export DB_EXPORT_PATH=/path/to/database && make import-db-docker"; \
+		exit 1; \
+	fi
+	@docker compose run --rm -e DB_EXPORT_PATH="$$DB_EXPORT_PATH" -v "$$DB_EXPORT_PATH:/external/db:ro" db-import python3 import-db.py
+	@if [ $$? -eq 0 ]; then \
+		echo "✅" > $(DB_STATE_FILE); \
+		echo ""; \
+		echo "✅ Database imported successfully!"; \
+		echo "   Restart backend with: make restart"; \
+	else \
+		echo ""; \
+		echo "❌ Database import FAILED!"; \
+		exit 1; \
+	fi
 
 # Reset admin users
 reset-admin:

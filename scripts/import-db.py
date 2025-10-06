@@ -36,8 +36,20 @@ def get_db_export_path():
     db_path = Path(custom_path).resolve()
     
     # Security check: prevent paths from being inside repository
-    repo_root = Path(__file__).parent.parent.resolve()
-    if db_path.is_relative_to(repo_root):
+    # Get repository root (handle both local and Docker environments)
+    script_dir = Path(__file__).parent.resolve()
+    
+    # In Docker: /app/import-db.py (no parent.parent, script is at root of /app)
+    # In local: /path/to/repo/scripts/import-db.py (need parent.parent)
+    if script_dir.name == 'scripts':
+        # Local environment: script is in scripts/ folder
+        repo_root = script_dir.parent.resolve()
+    else:
+        # Docker environment: script is copied to /app directly
+        repo_root = script_dir.resolve()
+    
+    # Only check if repo_root is meaningful (not system root /)
+    if repo_root != Path('/') and db_path.is_relative_to(repo_root):
         print(f"❌ ERROR: Database export path cannot be inside the repository!")
         print(f"   Repository root: {repo_root}")
         print(f"   Export path: {db_path}")
