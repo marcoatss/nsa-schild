@@ -39,10 +39,10 @@ setup:
 	@echo "🚀 First-time setup starting..."
 	@echo ""
 	@echo "Step 1: Building Docker images..."
-	docker-compose build --progress=plain
+	docker compose build --progress=plain
 	@echo ""
 	@echo "Step 2: Starting services..."
-	docker-compose up -d
+	docker compose up -d
 	@echo ""
 	@echo "Step 3: Waiting for services to be ready..."
 	@timeout=120; \
@@ -112,7 +112,7 @@ setup:
 build:
 	@echo "📦 Building Docker images..."
 	@echo "   This may take a few minutes on first build..."
-	docker-compose build --progress=plain
+	docker compose build --progress=plain
 
 
 # Start all services (with auto-build check)
@@ -120,12 +120,12 @@ start:
 	@echo "🔍 Checking if build is needed..."
 	@if ! docker images | grep -q "nsa-schild-backend"; then \
 		echo "📦 Building images (first time)..."; \
-		docker-compose build; \
+		docker compose build; \
 	else \
 		echo "✅ Images already built, starting services..."; \
 	fi
 	@echo ""
-	docker-compose up -d
+	docker compose up -d
 	@echo ""
 	@echo "🔄 Starting services..."
 	@echo "⏳ Waiting for Strapi to be ready..."
@@ -196,11 +196,11 @@ start:
 
 # Start all services with live logs
 start-logs:
-	docker-compose up
+	docker compose up
 
 # Start services and wait (without showing progress)
 start-wait:
-	docker-compose up -d
+	docker compose up -d
 	@echo ""
 	@echo "⏳ Waiting for Strapi to be ready..."
 	@timeout=120; \
@@ -219,11 +219,11 @@ start-wait:
 
 # Stop all services (containers only, keep for restart)
 stop:
-	docker-compose stop
+	docker compose stop
 
 # Stop and remove containers + networks (but keep volumes)
 down:
-	docker-compose down
+	docker compose down
 
 # Destroy everything (containers, networks, volumes)
 # Force re-import database (destroys existing data)
@@ -249,7 +249,7 @@ destroy:
 	if [[ "$$REPLY" == "DESTROY" ]]; then \
 		echo ""; \
 		echo "🗑️  Destroying everything..."; \
-		docker-compose down -v --remove-orphans; \
+		docker compose down -v --remove-orphans; \
 		rm -f $(DB_STATE_FILE); \
 		echo "✅ Everything destroyed!"; \
 	else \
@@ -259,7 +259,7 @@ destroy:
 # Restart all services
 restart:
 	@echo "🔄 Restarting services..."
-	docker-compose restart
+	docker compose restart
 	@echo ""
 	@echo "⏳ Waiting for Strapi to be ready..."
 	@timeout=120; \
@@ -283,15 +283,15 @@ restart:
 
 # View logs
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 # Backend logs only
 backend:
-	docker-compose logs -f backend
+	docker compose logs -f backend
 
 # Frontend logs only
 frontend:
-	docker-compose logs -f frontend
+	docker compose logs -f frontend
 
 # Import database
 import-db:
@@ -320,7 +320,7 @@ import-db:
 # Import database (Docker)
 import-db-docker:
 	@echo "🚀 Importing database from db/strapi folder (Docker)..."
-	docker-compose run --rm db-import python3 import-db.py
+	docker compose run --rm db-import python3 import-db.py
 	@echo ""
 	@echo "✅ Database imported!"
 	@echo "   Restart backend with: make restart"
@@ -336,7 +336,7 @@ reset-admin:
 # Reset admin users (Docker)
 reset-admin-docker:
 	@echo "🔐 Resetting admin users (Docker)..."
-	docker-compose run --rm db-import python3 reset-admin.py
+	docker compose run --rm db-import python3 reset-admin.py
 	@echo ""
 	@echo "✅ Admin users reset!"
 	@echo "   Restart backend with: make restart"
