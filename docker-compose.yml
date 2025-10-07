@@ -25,22 +25,10 @@ services:
       dockerfile: Dockerfile
     container_name: schild-backend
     restart: unless-stopped
+    env_file:
+      - ./backend/.env${ENV_SUFFIX:-.development}
     environment:
       NODE_ENV: development
-      HOST: 0.0.0.0
-      PORT: 1337
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_NAME: schild_db
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_SSL: false
-      APP_KEYS: ${APP_KEYS:-ULBnL1T8V2dx0vxqHlHT7g==,kkJRR6P9tE/cGvcn3WZtlQ==,UV769DXWvhyhEP2Ih0XLSA==,4z/PbrcIkZe2ABGFf8dJKg==}
-      JWT_SECRET: ${JWT_SECRET:-pml16TyjhSLL/qpVB28HWWfrsofEXgNuCXSwiYJ9Kxw=}
-      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-UrTu4/E1sE7JuYRXL4aEDLfJlEHPZLe0GaVTp1ZlpYY=}
-      API_TOKEN_SALT: ${API_TOKEN_SALT:-Rvk20hwatybF3H7uDlRbN+KO9wTBO8+fdwj/y59Ux+w=}
-      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:-AW3N8N2Lu93vMHfEQXPwWa8B5uZJbsQR6n0fHRg0YvE=}
     ports:
       - "1337:1337"
     volumes:
@@ -59,10 +47,10 @@ services:
       dockerfile: Dockerfile
     container_name: schild-frontend
     restart: unless-stopped
+    env_file:
+      - ./frontend/.env${ENV_SUFFIX:-.local}
     environment:
       NODE_ENV: development
-      NEXT_PUBLIC_URL_BACKEND: http://localhost:1337
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
     ports:
       - "3000:3000"
     volumes:

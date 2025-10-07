@@ -68,7 +68,7 @@ nsa-schild/
 - **Framework**: Strapi v4.24.3
 - **Port**: 1337 (default)
 - **API Style**: REST API with GraphQL support
-- **Database**: PostgreSQL 15.6 (exact: sha256:1ebd963e5c598f944a4e9ba27de4c95289d663dcc73731025aa53c5254094d8f) (production), SQLite (development default)
+- **Database**: PostgreSQL 15.6 (exact: sha256:1ebd963e5c598f944a4e9ba27de4c95289d663dcc73731025aa53c5254094d8f) (development and production)
 
 **Key Strapi Plugins:**
 - `@strapi/plugin-i18n` - Internationalization
@@ -103,15 +103,15 @@ nsa-schild/
 
 **Why Docker-only for backend:**
 - Consistent environment across all developers
-- No need to install Node.js 18.10.0 locally
+- No need to install Node.js 18.17.0+ locally
 - Easy database import and reset
 - Isolated PostgreSQL database
 - Single command to start everything
 
 **Quick Start:**
 ```bash
-make build        # Build Docker images
-make up           # Start all services
+make start        # Start development services (sets up .env.development files)
+make start-prod   # Start production services (sets up .env.production files)
 make import-db    # Import database (requires DB_EXPORT_PATH)
 ```
 
@@ -122,14 +122,14 @@ See **[DOCKER.md](DOCKER.md)** for complete Docker setup and commands.
 The frontend (Next.js) can still be developed locally for faster iteration:
 
 **Prerequisites for frontend development:**
-- **Node.js**: 18.10.0 (use nvm to manage versions)
+- **Node.js**: 18.17.0+ (use nvm to manage versions)
 - **npm**: ≥ 6.0.0
 
 **Setup frontend locally:**
 ```bash
-# Install Node 18.10.0 (if not already installed)
-nvm install 18.10.0
-nvm use 18.10.0
+# Install Node 18.17.0 (if not already installed)
+nvm install 18.17.0
+nvm use 18.17.0
 
 # Install frontend dependencies
 cd frontend
@@ -208,12 +208,14 @@ The system enforces security by:
 
 **Start all backend services:**
 ```bash
-# Build and start backend (PostgreSQL + Strapi)
-make build
-make up
+# Start development environment (PostgreSQL + Strapi)
+make start
+
+# Or start production environment
+make start-prod
 
 # Or use Docker Compose directly
-docker-compose up -d
+docker compose up -d
 ```
 
 **Backend services will start on:**
@@ -586,10 +588,14 @@ Strapi automatically creates `*_localizations_links` tables for relationships be
 
 ## Environment Variables
 
-### Backend Required Variables
+The project uses environment-specific configuration files:
 
+### Development Environment Files
+
+**Backend (`backend/.env.development`)** - Created by `make start`:
 ```bash
 # Essential
+NODE_ENV=development
 APP_KEYS=                    # Comma-separated random keys
 API_TOKEN_SALT=             # Random string
 ADMIN_JWT_SECRET=           # Random string
@@ -600,23 +606,56 @@ JWT_SECRET=                 # Random string
 HOST=0.0.0.0
 PORT=1337
 
-# Database
+# Database (Docker service names)
 DATABASE_CLIENT=postgres
-DATABASE_HOST=localhost
+DATABASE_HOST=postgres
 DATABASE_PORT=5432
 DATABASE_NAME=schild_db
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
 ```
 
-### Frontend Required Variables
-
+**Frontend (`frontend/.env.local`)** - Created by `make start`:
 ```bash
-# Backend connection
+# Backend connection (localhost for browser access)
 NEXT_PUBLIC_URL_BACKEND=http://localhost:1337
 
 # Site metadata
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### Production Environment Files
+
+**Backend (`backend/.env.production`)** - Created by `make start-prod`:
+```bash
+# Essential
+NODE_ENV=production
+APP_KEYS=                    # Comma-separated random keys
+API_TOKEN_SALT=             # Random string
+ADMIN_JWT_SECRET=           # Random string
+TRANSFER_TOKEN_SALT=        # Random string
+JWT_SECRET=                 # Random string
+
+# Server
+HOST=0.0.0.0
+PORT=1337
+
+# Database (Docker service names)
+DATABASE_CLIENT=postgres
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_NAME=schild_db
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+```
+
+**Frontend (`frontend/.env.production`)** - Created by `make start-prod`:
+```bash
+# Backend connection (Docker service names)
+NEXT_PUBLIC_URL_BACKEND=http://backend:1337
+
+# Site metadata
+NEXT_PUBLIC_SITE_URL=http://frontend:3000
 ```
 
 ### Production-Only Variables
@@ -700,7 +739,7 @@ All helper scripts are located in the `scripts/` folder. See `scripts/README.md`
 
 ### Database Import (`scripts/import-db.py`)
 
-Imports database from AWS RDS Parquet exports in `db/strapi/` folder.
+Imports database from external AWS RDS Parquet exports. **Requires external path for security.**
 
 **Features:**
 - Drops and recreates public schema (clean slate)
@@ -708,9 +747,13 @@ Imports database from AWS RDS Parquet exports in `db/strapi/` folder.
 - Sets up PostgreSQL sequences for auto-incrementing IDs
 - Imports all data from Parquet files
 - Automatically resets admin users (by default)
+- **Security**: Blocks imports from repository paths, requires external `DB_EXPORT_PATH`
 
 **Usage:**
 ```bash
+# Set external database path (REQUIRED)
+export DB_EXPORT_PATH=/path/to/your/database/export
+
 # Full import with admin reset
 python3 scripts/import-db.py
 
@@ -720,6 +763,12 @@ python3 scripts/import-db.py --skip-admin-reset
 # Or use Make command
 make import-db
 ```
+
+**Security Features:**
+- **External Path Required**: `DB_EXPORT_PATH` environment variable is mandatory
+- **Repository Block**: Prevents import from paths inside the repository
+- **Path Validation**: Uses absolute paths for safe comparison
+- **Clear Messages**: Explains the issue and provides solutions
 
 **Requirements:**
 ```bash
@@ -992,9 +1041,9 @@ npm run strapi generate
 
 **Problem**: EBADENGINE warnings or compatibility errors
 - **Solution**: 
-  - Ensure you're using Node 18.10.0: `node -v` should show v18.10.0
-  - Switch to Node 18.10.0: `nvm use 18.10.0` or `nvm use` (if in project directory)
-  - Set as default: `nvm alias default 18.10.0`
+  - Ensure you're using Node 18.17.0+: `node -v` should show v18.17.0+
+  - Switch to Node 18.17.0: `nvm use 18.17.0` or `nvm use` (if in project directory)
+  - Set as default: `nvm alias default 18.17.0`
   - Clean reinstall: `rm -rf node_modules package-lock.json && npm install`
 
 **Problem**: `nvm: command not found`
@@ -1093,8 +1142,8 @@ npm run strapi generate
 
 **Setup & Daily Use:**
 ```bash
-make setup         # First-time setup (build + start + prompts for optional import)
-make start         # Start services (prompts for import if database not imported)
+make start         # Start development environment (sets up .env.development files)
+make start-prod    # Start production environment (sets up .env.production files)
 make stop          # Stop services (keeps data)
 make restart       # Restart all services
 make destroy       # Destroy everything (ALL DATA LOST!)
@@ -1125,8 +1174,8 @@ npm run lint       # Run ESLint
 ### Container Management Commands
 
 **Service Control:**
-- `make setup` - First-time setup (build + start + optional import)
-- `make start` - Starts services (prompts for import if needed)
+- `make start` - Start development environment (sets up .env.development files)
+- `make start-prod` - Start production environment (sets up .env.production files)
 - `make stop` - Stops containers and removes them (clean shutdown)
 - `make destroy` - Destroys everything including volumes (⚠️ DANGER)
 
@@ -1320,19 +1369,19 @@ make up
 - **Check Docker is running**:
   ```bash
   docker --version
-  docker-compose --version
+  docker compose version
   ```
 
 - **Check container logs**:
   ```bash
-  docker-compose logs backend
-  docker-compose logs postgres
+  docker compose logs backend
+  docker compose logs postgres
   ```
 
-- **Rebuild containers**:
+- **Start services**:
   ```bash
-  make build
-  make up
+  make start        # Development environment
+  make start-prod   # Production environment
   ```
 
 #### 3. Frontend Dependency Conflicts (`ERESOLVE` errors)
@@ -1492,18 +1541,19 @@ make up
 # Stop containers but keep them (fast restart)
 make stop
 
-# Stop and remove containers (clean shutdown)
-make down
-
 # Destroy everything including data (DANGER)
 make destroy
 
 # Restart services
 make restart
+
+# Start services
+make start        # Development environment
+make start-prod   # Production environment
 ```
 
 #### 9. Startup Timeout Issues
-**Problem**: `make up` times out waiting for Strapi
+**Problem**: `make start` times out waiting for Strapi
 
 **Solutions**:
 ```bash
@@ -1511,14 +1561,14 @@ make restart
 make logs
 
 # Try alternative startup with live logs
-make up-logs
+make start-logs
 
 # Try silent startup
-make up-wait
+make start-wait
 
 # Manual restart
-make down
-make up
+make stop
+make start
 ```
 
 #### 10. Images Not Loading
@@ -1557,14 +1607,14 @@ curl http://localhost:1337/admin
 curl http://localhost:1337/api/homepage?populate=deep
 
 # Check database connection (Docker)
-docker-compose exec postgres psql -U postgres -d schild_db -c "\dt"
+docker compose exec postgres psql -U postgres -d schild_db -c "\dt"
 
 # Check Docker containers
-docker-compose ps
+docker compose ps
 
 # Check container logs
-docker-compose logs backend
-docker-compose logs postgres
+docker compose logs backend
+docker compose logs postgres
 
 # Check if ./db folder exists (for import requirement)
 ls -la ./db

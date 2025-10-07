@@ -1,4 +1,4 @@
-.PHONY: help build setup start down restart logs clean import-db reset-admin backend frontend
+.PHONY: help build setup start down restart logs clean import-db reset-admin backend frontend setup-env start-prod
 
 # State tracking file
 DB_STATE_FILE = .db_imported
@@ -7,11 +7,11 @@ DB_STATE_FILE = .db_imported
 help:
 	@echo "NSA Schild Commands"
 	@echo ""
-	@echo "Setup (First Time):"
-	@echo "  make setup              - Complete first-time setup (build + import + start)"
+	@echo "Main Commands:"
+	@echo "  make start              - Start development environment (backend only, sets up env files)"
+	@echo "  make start-prod         - Start production environment (all services, sets up env files)"
 	@echo ""
 	@echo "Daily Use:"
-	@echo "  make start              - Start services (backend only, prompts for import)"
 	@echo "  make start-logs         - Start services with live logs"
 	@echo "  make start-full         - Start ALL services with live logs (blocks terminal)"
 	@echo "  make start-full-detached - Start ALL services in background"
@@ -37,17 +37,31 @@ help:
 	@echo "  make destroy            - Destroy everything (ALL DATA LOST!)"
 	@echo ""
 
-# Complete first-time setup
-setup:
-	@echo "🚀 First-time setup starting..."
+# Start development environment (backend only)
+start:
+	@echo "🚀 Starting development environment..."
 	@echo ""
-	@echo "Step 1: Building Docker images..."
-	docker compose build --progress=plain
+	@echo "Step 1: Setting up environment files..."
+	@if [ ! -f backend/.env.development ]; then \
+		echo "   Creating backend/.env.development from .env.example (Docker URLs + dev settings)..."; \
+		sed 's|DATABASE_HOST=localhost|DATABASE_HOST=postgres|g; s|DATABASE_PASSWORD=your-secure-password|DATABASE_PASSWORD=postgres|g' backend/.env.example > backend/.env.development 2>/dev/null || echo "   ⚠️  backend/.env.example not found, you'll need to create backend/.env.development manually"; \
+	else \
+		echo "   ✅ backend development environment file already exists"; \
+	fi
+	@if [ ! -f frontend/.env.local ] && [ ! -f frontend/.env.production ]; then \
+		echo "   Creating frontend/.env.local from .env.example..."; \
+		cp frontend/.env.example frontend/.env.local 2>/dev/null || echo "   ⚠️  frontend/.env.example not found, you'll need to create frontend/.env.local manually"; \
+	else \
+		echo "   ✅ frontend environment file already exists"; \
+	fi
 	@echo ""
-	@echo "Step 2: Starting services..."
-	docker compose up -d
+	@echo "Step 2: Building Docker images..."
+	docker compose build --progress=plain postgres backend
 	@echo ""
-	@echo "Step 3: Waiting for services to be ready..."
+	@echo "Step 3: Starting services..."
+	ENV_SUFFIX="" docker compose up -d postgres backend
+	@echo ""
+	@echo "Step 4: Waiting for services to be ready..."
 	@timeout=120; \
 	while [ $$timeout -gt 0 ]; do \
 		if curl -s -f http://localhost:1337/admin >/dev/null 2>&1; then \
@@ -100,15 +114,15 @@ setup:
 			echo "   export DB_EXPORT_PATH=/path/to/database && make import-db"; \
 		fi; \
 		echo ""; \
-		echo "✅ Setup complete! Services are ready."; \
+		echo "✅ Development environment ready!"; \
 		echo "   Backend:  http://localhost:1337/admin"; \
-		echo "   Frontend: http://localhost:3000"; \
+		echo "   Frontend: http://localhost:3000 (run 'npm run dev' in frontend/)"; \
 	else \
 		echo "✅ Database already imported"; \
 		echo ""; \
-		echo "✅ Setup complete! Services are ready."; \
+		echo "✅ Development environment ready!"; \
 		echo "   Backend:  http://localhost:1337/admin"; \
-		echo "   Frontend: http://localhost:3000"; \
+		echo "   Frontend: http://localhost:3000 (run 'npm run dev' in frontend/)"; \
 	fi
 
 # Build all images
@@ -119,84 +133,6 @@ build:
 
 
 # Start all services (with auto-build check)
-start:
-	@echo "🔍 Checking if build is needed..."
-	@if ! docker images | grep -q "nsa-schild-backend"; then \
-		echo "📦 Building images (first time)..."; \
-		docker compose build; \
-	else \
-		echo "✅ Images already built, starting services..."; \
-	fi
-	@echo ""
-	docker compose up -d
-	@echo ""
-	@echo "🔄 Starting services..."
-	@echo "⏳ Waiting for Strapi to be ready..."
-	@echo ""
-	@timeout=120; \
-	while [ $$timeout -gt 0 ]; do \
-		if curl -s -f http://localhost:1337/admin >/dev/null 2>&1; then \
-			break; \
-		fi; \
-		echo "   Waiting for Strapi..."; \
-		sleep 2; \
-		timeout=$$((timeout - 2)); \
-	done; \
-	if [ $$timeout -le 0 ]; then \
-		echo "❌ Timeout waiting for Strapi to start"; \
-		echo "   Check logs with: make logs"; \
-		exit 1; \
-	fi
-	@echo ""
-	@if [ ! -f $(DB_STATE_FILE) ]; then \
-		echo "⚠️  Database not imported yet!"; \
-		echo ""; \
-		echo "   This application works best with imported data."; \
-		echo "   Would you like to import the database now?"; \
-		echo ""; \
-		echo "   (Make sure to set: export DB_EXPORT_PATH=/path/to/database)"; \
-		echo ""; \
-		read -p "   Import database? (y/n): " -r; \
-		if [[ "$$REPLY" =~ ^[Yy]$$ ]]; then \
-			echo ""; \
-			echo "   Starting database import..."; \
-			make import-db; \
-			if [ $$? -eq 0 ]; then \
-				echo ""; \
-				echo "   ✅ Database imported successfully!"; \
-				echo "   Restarting services to apply changes..."; \
-				make restart; \
-			else \
-				echo ""; \
-				echo "   ❌ Database import failed!"; \
-				echo "   Common issues:"; \
-				echo "   • DB_EXPORT_PATH not set or path doesn't exist"; \
-				echo "   • Export path contains no .parquet files"; \
-				echo "   • Export doesn't contain actual content data"; \
-				echo ""; \
-				echo "   Application cannot run without database."; \
-				exit 1; \
-			fi; \
-		else \
-			echo ""; \
-			echo "   ⚠️  Proceeding without database import..."; \
-			echo "   The application will start with empty database."; \
-			echo "   You can import database later with:"; \
-			echo "   export DB_EXPORT_PATH=/path/to/database && make import-db"; \
-		fi; \
-		echo ""; \
-		echo "✅ All services are ready!"; \
-		echo "   Backend:  http://localhost:1337/admin"; \
-		echo "   Frontend: http://localhost:3000"; \
-	else \
-		echo "✅ All services are ready!"; \
-		echo "   Backend:  http://localhost:1337/admin"; \
-		echo "   Frontend: http://localhost:3000"; \
-		echo ""; \
-		echo "✅ Database already imported"; \
-	fi
-	@echo "Run 'make logs' to view logs"
-
 # Start all services with live logs
 start-logs:
 	docker compose up
@@ -292,17 +228,31 @@ restart:
 	@echo "   Backend:  http://localhost:1337/admin"
 	@echo "   Frontend: http://localhost:3000"
 
-# View logs
+# View logs (auto-detects environment)
 logs:
-	docker compose logs -f
+	@if [ -f backend/.env.production ]; then \
+		echo "📋 Production environment detected, using .env.production files"; \
+		ENV_SUFFIX=".production" docker compose logs -f; \
+	else \
+		echo "📋 Development environment detected, using .env.development files"; \
+		ENV_SUFFIX="" docker compose logs -f; \
+	fi
 
-# Backend logs only
+# Backend logs only (auto-detects environment)
 backend:
-	docker compose logs -f backend
+	@if [ -f backend/.env.production ]; then \
+		ENV_SUFFIX=".production" docker compose logs -f backend; \
+	else \
+		ENV_SUFFIX="" docker compose logs -f backend; \
+	fi
 
-# Frontend logs only
+# Frontend logs only (auto-detects environment)
 frontend:
-	docker compose logs -f frontend
+	@if [ -f backend/.env.production ]; then \
+		ENV_SUFFIX=".production" docker compose logs -f frontend; \
+	else \
+		ENV_SUFFIX="" docker compose logs -f frontend; \
+	fi
 
 # Import database
 import-db:
@@ -359,6 +309,26 @@ reset-admin:
 	@echo "✅ Admin users reset!"
 	@echo "   Restart backend with: make restart"
 
+# Setup environment files for development
+setup-env:
+	@echo "🔧 Setting up development environment files..."
+	@if [ ! -f backend/.env ] && [ ! -f backend/.env.production ] && [ ! -f backend/.env.local ]; then \
+		echo "   Creating backend/.env from .env.example (localhost URLs)..."; \
+		cp backend/.env.example backend/.env 2>/dev/null || echo "   ⚠️  backend/.env.example not found, you'll need to create backend/.env manually"; \
+	else \
+		echo "   ✅ backend environment file already exists"; \
+	fi
+	@if [ ! -f frontend/.env.local ] && [ ! -f frontend/.env.production ]; then \
+		echo "   Creating frontend/.env.local from .env.example (localhost URLs)..."; \
+		cp frontend/.env.example frontend/.env.local 2>/dev/null || echo "   ⚠️  frontend/.env.example not found, you'll need to create frontend/.env.local manually"; \
+	else \
+		echo "   ✅ frontend environment file already exists"; \
+	fi
+	@echo ""
+	@echo "✅ Development environment setup complete!"
+	@echo "   For production: use 'make start-prod' (automatically creates .env.production with Docker URLs)"
+	@echo "   Edit the .env files with your configuration before starting services"
+
 # Reset admin users (Docker)
 reset-admin-docker:
 	@echo "🔐 Resetting admin users (Docker)..."
@@ -366,5 +336,68 @@ reset-admin-docker:
 	@echo ""
 	@echo "✅ Admin users reset!"
 	@echo "   Restart backend with: make restart"
+
+# Start in production mode (with detached services)
+start-prod:
+	@echo "🚀 Starting in production mode..."
+	@echo ""
+	@echo "Step 1: Setting up environment files..."
+	@if [ ! -f backend/.env.production ] && [ ! -f backend/.env.local ]; then \
+		if [ -f backend/.env.example ]; then \
+			echo "   Creating backend/.env.production from .env.example (Docker URLs + production mode)..."; \
+			sed 's|DATABASE_HOST=localhost|DATABASE_HOST=postgres|g; s|NODE_ENV=development|NODE_ENV=production|g; s|DATABASE_PASSWORD=your-secure-password|DATABASE_PASSWORD=postgres|g' backend/.env.example > backend/.env.production; \
+		else \
+			echo "   ⚠️  backend/.env.example not found, creating empty backend/.env.production"; \
+			touch backend/.env.production; \
+		fi; \
+	else \
+		echo "   ✅ backend production environment file already exists"; \
+	fi
+	@if [ ! -f frontend/.env.production ]; then \
+		if [ -f frontend/.env.example ]; then \
+			echo "   Creating frontend/.env.production from .env.example (Docker URLs)..."; \
+			sed 's|http://localhost:1337|http://backend:1337|g' frontend/.env.example > frontend/.env.production; \
+		else \
+			echo "   ⚠️  frontend/.env.example not found, creating empty frontend/.env.production"; \
+			touch frontend/.env.production; \
+		fi; \
+	else \
+		echo "   ✅ frontend production environment file already exists"; \
+	fi
+	@echo ""
+	@echo "Step 2: Building Docker images for production..."
+	docker compose build --progress=plain
+	@echo ""
+	@echo "Step 3: Starting production services..."
+	ENV_SUFFIX=".production" docker compose --profile full up -d
+	@echo ""
+	@echo "Step 4: Waiting for services to be ready..."
+	@timeout=120; \
+	while [ $$timeout -gt 0 ]; do \
+		if curl -s -f http://localhost:1337/admin >/dev/null 2>&1; then \
+			break; \
+		fi; \
+		echo "   Waiting for Strapi..."; \
+		sleep 2; \
+		timeout=$$((timeout - 2)); \
+	done; \
+	if [ $$timeout -le 0 ]; then \
+		echo "❌ Timeout waiting for Strapi to start"; \
+		echo "   Check logs with: make logs"; \
+		exit 1; \
+	fi
+	@echo ""
+	@echo "✅ Production mode started!"
+	@echo ""
+	@echo "📋 Next steps:"
+	@echo "   1. Edit backend/.env.production with your production values"
+	@echo "   2. Edit frontend/.env.production with your production URLs"
+	@echo "   3. Import database (if needed): export DB_EXPORT_PATH=/path/to/db && make import-db-docker"
+	@echo "   4. Create admin user: http://localhost:1337/admin"
+	@echo "   5. Configure public API permissions in Strapi admin"
+	@echo ""
+	@echo "🌐 Services running:"
+	@echo "   Backend:  http://localhost:1337/admin"
+	@echo "   Frontend: http://localhost:3000"
 
 
